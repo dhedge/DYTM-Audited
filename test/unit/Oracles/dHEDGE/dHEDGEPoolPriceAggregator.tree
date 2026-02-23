@@ -1,0 +1,25 @@
+dHEDGEPoolPriceAggregator
+├── When base asset is a dHEDGE vault
+│   ├── Given quote asset USD
+│   │   └── It should return token price of the vault.
+│   ├── Given quote asset is a valid token
+│   │   └── It should return token price of the vault in terms of the quote asset.
+│   ├── Given quote asset is the same as the base asset
+│   │   └── It should return the input amount.
+│   └── Given quote asset oracle is not set
+│       └── It should revert.
+│           └── With `dHEDGEPoolPriceAggregator__PriceNotFound` error.
+├── When quote assets is a dHEDGE vault
+│   ├── Given base asset is USD
+│   │   └── It should return the inverse token price of the vault.
+│   ├── Given base asset is a valid token
+│   │   └── It should return the inverse token price of the vault in terms of the base asset.
+│   └── Given base asset oracle is not set
+│       └── It should revert.
+│           └── With `dHEDGEPoolPriceAggregator__PriceNotFound` error.
+├── When oracle price is stale // Assume quote asset is a token with chainlink oracle
+│   └── It should revert.
+│       └── With `dHEDGEPoolPriceAggregator__StalePrice` error.
+└── When oracle price is zero // Assume quote asset is a token with chainlink oracle
+    └── It should revert.
+        └── With `dHEDGEPoolPriceAggregator__PriceNotFound` error.

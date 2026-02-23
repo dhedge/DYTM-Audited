@@ -1,0 +1,71 @@
+Office_repay
+└── When the account has a debt position
+    ├── When repaying the debt completely with external funds and caller is owner
+    │   ├── It should close the debt position.
+    │   ├── It should burn all debt shares of the account.
+    │   ├── It should decrease the borrowed assets amount.
+    │   └── It should not modify the supplied assets amount.
+    ├── When repaying the debt partially with external funds and caller is owner
+    │   ├── It should burn correct amount of debt shares of the account.
+    │   ├── It should decrease the borrowed assets amount.
+    │   └── It should not modify the supplied assets amount.
+    ├── When repaying the debt partially and below minimum debt with external funds and caller is owner
+    │   └── It should revert.
+    │       └── With `Office__DebtBelowMinimum` error.
+    ├── When repaying the debt with external funds and caller is operator
+    │   ├── It should burn correct amount of debt shares of the account.
+    │   ├── It should decrease the borrowed assets amount.
+    │   └── It should not modify the supplied assets amount.
+    ├── When repaying the debt with external funds and caller is not authorized
+    │   └── It should revert.
+    ├── When repaying the debt with collateral using delegation call and caller is owner
+    │   ├── It should burn correct amount of debt shares of the account.
+    │   ├── It should decrease the borrowed assets amount.
+    │   └── It should decrease the supplied assets amount.
+    ├── When repaying the debt with collateral using delegation call and caller is operator
+    │   ├── It should burn correct amount of debt shares of the account.
+    │   ├── It should decrease the borrowed assets amount.
+    │   └── It should decrease the supplied assets amount.
+    ├── When repaying the debt with collateral using delegation call and caller is not authorized
+    │   └── It should revert.
+    ├── When repaying the debt with collateral using delegation call but account will be unhealthy
+    │   └── It should revert.
+    │       └── This can happen when the position's collateral is drained more than the debt amount repaid.
+    ├── When repaying the debt via collateral
+    │   ├── Given collateral is escrow type
+    │   │   ├── It should burn correct amount of debt shares of the account.
+    │   │   ├── It should decrease the borrowed assets amount.
+    │   │   └── It should decrease escrow shares of the account.
+    │   ├── Given collateral is lent type
+    │   │   ├── It should burn correct amount of debt shares of the account.
+    │   │   ├── It should decrease the borrowed assets amount.
+    │   │   ├── It should decrease the supplied assets amount.
+    │   │   └── It should decrease lent shares of the account.
+    │   ├── Given collateral is invalid type
+    │   │   └── It should revert.
+    │   │       └── With `Office__InvalidCollateralType` error.
+    │   ├── Given account is unhealthy
+    │   │   └── It should revert.
+    │   │       └── With `Office__UnhealthyAccount` error.
+    │   └── Given account will be unhealthy // Because the margin after repay is below minimum
+    │       └── It should revert.
+    │           └── With `Office__UnhealthyAccount` error.
+    ├── When repaying the debt using max uint256 shares as input
+    │   ├── It should repay the entire debt of the account.
+    │   ├── It should burn all debt shares of the account.
+    │   ├── It should decrease the borrowed assets amount.
+    │   └── It should not modify the supplied assets amount.
+    ├── When repaying the debt using max uint256 assets as input
+    │   ├── It should repay the entire debt of the account.
+    │   ├── It should burn all debt shares of the account.
+    │   ├── It should decrease the borrowed assets amount.
+    │   ├── It should not modify the supplied assets amount.
+    │   └── It should only transfer the exact amount needed to repay the debt.
+    ├── When both assets and shares are provided
+    │   ├── It should revert.
+    │   └── With `IOffice.Office__AssetsAndSharesNonZero` error.
+    └── When repaying dust amount of debt // Condition where assetsRepaid > borrowed amount and repayment could fail due to rounding.
+        ├── It should repay the entire debt of the account.
+        ├── It should burn all debt shares of the account.
+        ├── It should decrease the borrowed assets amount.
+        └── It should not modify the supplied assets amount.

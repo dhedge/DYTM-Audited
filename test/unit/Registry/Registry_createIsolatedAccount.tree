@@ -1,0 +1,19 @@
+Registry_createIsolatedAccount
+├── When caller is owner
+│   ├── Given address is owner address
+│   │   ├── Given account is the first account
+│   │   │   ├── It should create an isolated account.
+│   │   │   ├── It should set the `accountCount` to 1.
+│   │   │   └── It should mint the account token to the owner address.
+│   │   └── Given account is not the first account
+│   │       ├── It should create an isolated account.
+│   │       ├── It should increment the `accountCount`.
+│   │       └── It should mint the account token to the owner address.
+│   └── Given address is zero address
+│       └── It should revert.
+│           └── With error `Registry__ZeroAddress` error.
+└── When caller is not owner
+    └── Given address is not zero address
+        ├── It should create an isolated account.
+        └── It should mint the account token to the given address.
+

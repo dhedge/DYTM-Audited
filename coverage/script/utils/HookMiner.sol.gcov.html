@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - lcov.info - script/utils/HookMiner.sol</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory script/utils">script/utils</a> - HookMiner.sol<span style="font-size: 80%;"> (source / <a href="HookMiner.sol.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">lcov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryHi">90.9&nbsp;%</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">10</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-12-15 19:22:06</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">             Branch data     Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>                 :             : // SPDX-License-Identifier: MIT</span>
+<span id="L2"><span class="lineNum">       2</span>                 :             : pragma solidity 0.8.29;</span>
+<span id="L3"><span class="lineNum">       3</span>                 :             : </span>
+<span id="L4"><span class="lineNum">       4</span>                 :             : import {ALL_HOOK_MASK} from &quot;../../src/libraries/Constants.sol&quot;;</span>
+<span id="L5"><span class="lineNum">       5</span>                 :             : </span>
+<span id="L6"><span class="lineNum">       6</span>                 :             : /// @title HookMiner</span>
+<span id="L7"><span class="lineNum">       7</span>                 :             : /// @notice a minimal library for mining hook addresses</span>
+<span id="L8"><span class="lineNum">       8</span>                 :             : library HookMiner {</span>
+<span id="L9"><span class="lineNum">       9</span>                 :             :     // Maximum number of iterations to find a salt, avoid infinite loops or MemoryOOG</span>
+<span id="L10"><span class="lineNum">      10</span>                 :             :     // (arbitrarily set)</span>
+<span id="L11"><span class="lineNum">      11</span>                 :             :     uint256 constant MAX_LOOP = 160_444;</span>
+<span id="L12"><span class="lineNum">      12</span>                 :             : </span>
+<span id="L13"><span class="lineNum">      13</span>                 :             :     /// @notice Find a salt that produces a hook address with the desired `flags`</span>
+<span id="L14"><span class="lineNum">      14</span>                 :             :     /// @param deployer The address that will deploy the hook. In `forge test`, this will be the test contract `address(this)` or the pranking address</span>
+<span id="L15"><span class="lineNum">      15</span>                 :             :     /// In `forge script`, this should be `0x4e59b44847b379578588920cA78FbF26c0B4956C` (CREATE2 Deployer Proxy)</span>
+<span id="L16"><span class="lineNum">      16</span>                 :             :     /// @param flags The desired flags for the hook address. Example `uint160(Hooks.BEFORE_SWAP_FLAG | Hooks.AFTER_SWAP_FLAG | ...)`</span>
+<span id="L17"><span class="lineNum">      17</span>                 :             :     /// @param creationCode The creation code of a hook contract. Example: `type(Counter).creationCode`</span>
+<span id="L18"><span class="lineNum">      18</span>                 :             :     /// @param constructorArgs The encoded constructor arguments of a hook contract. Example: `abi.encode(address(manager))`</span>
+<span id="L19"><span class="lineNum">      19</span>                 :             :     /// @return (hookAddress, salt) The hook deploys to `hookAddress` when using `salt` with the syntax: `new Hook{salt: salt}(&lt;constructor arguments&gt;)`</span>
+<span id="L20"><span class="lineNum">      20</span>                 :<span class="tlaGNC">           1 :     function find(address deployer, uint160 flags, bytes memory creationCode, bytes memory constructorArgs)</span></span>
+<span id="L21"><span class="lineNum">      21</span>                 :             :         internal</span>
+<span id="L22"><span class="lineNum">      22</span>                 :             :         view</span>
+<span id="L23"><span class="lineNum">      23</span>                 :             :         returns (address, bytes32)</span>
+<span id="L24"><span class="lineNum">      24</span>                 :             :     {</span>
+<span id="L25"><span class="lineNum">      25</span>                 :<span class="tlaGNC">           1 :         flags = flags &amp; ALL_HOOK_MASK; // mask for only the bottom 14 bits</span></span>
+<span id="L26"><span class="lineNum">      26</span>                 :<span class="tlaGNC">           1 :         bytes memory creationCodeWithArgs = abi.encodePacked(creationCode, constructorArgs);</span></span>
+<span id="L27"><span class="lineNum">      27</span>                 :             : </span>
+<span id="L28"><span class="lineNum">      28</span>                 :<span class="tlaGNC">           1 :         address hookAddress;</span></span>
+<span id="L29"><span class="lineNum">      29</span>                 :<span class="tlaGNC">           1 :         for (uint256 salt; salt &lt; MAX_LOOP; salt++) {</span></span>
+<span id="L30"><span class="lineNum">      30</span>                 :<span class="tlaGNC">        9632 :             hookAddress = computeAddress(deployer, salt, creationCodeWithArgs);</span></span>
+<span id="L31"><span class="lineNum">      31</span>                 :             : </span>
+<span id="L32"><span class="lineNum">      32</span>                 :             :             // if the hook's bottom 14 bits match the desired flags AND the address does not have bytecode, we found a match</span>
+<span id="L33"><span class="lineNum">      33</span>            [<span class="tlaGBC" title="Branch 0 was taken 1 time"> + </span>]:<span class="tlaGNC">        9632 :             if (uint160(hookAddress) &amp; ALL_HOOK_MASK == flags &amp;&amp; hookAddress.code.length == 0) {</span></span>
+<span id="L34"><span class="lineNum">      34</span>                 :<span class="tlaGNC">           1 :                 return (hookAddress, bytes32(salt));</span></span>
+<span id="L35"><span class="lineNum">      35</span>                 :             :             }</span>
+<span id="L36"><span class="lineNum">      36</span>                 :             :         }</span>
+<span id="L37"><span class="lineNum">      37</span>                 :<span class="tlaUNC">           0 :         revert(&quot;HookMiner: could not find salt&quot;);</span></span>
+<span id="L38"><span class="lineNum">      38</span>                 :             :     }</span>
+<span id="L39"><span class="lineNum">      39</span>                 :             : </span>
+<span id="L40"><span class="lineNum">      40</span>                 :             :     /// @notice Precompute a contract address deployed via CREATE2</span>
+<span id="L41"><span class="lineNum">      41</span>                 :             :     /// @param deployer The address that will deploy the hook. In `forge test`, this will be the test contract `address(this)` or the pranking address</span>
+<span id="L42"><span class="lineNum">      42</span>                 :             :     /// In `forge script`, this should be `0x4e59b44847b379578588920cA78FbF26c0B4956C` (CREATE2 Deployer Proxy)</span>
+<span id="L43"><span class="lineNum">      43</span>                 :             :     /// @param salt The salt used to deploy the hook</span>
+<span id="L44"><span class="lineNum">      44</span>                 :             :     /// @param creationCodeWithArgs The creation code of a hook contract, with encoded constructor arguments appended. Example: `abi.encodePacked(type(Counter).creationCode, abi.encode(constructorArg1, constructorArg2))`</span>
+<span id="L45"><span class="lineNum">      45</span>                 :<span class="tlaGNC">        9632 :     function computeAddress(address deployer, uint256 salt, bytes memory creationCodeWithArgs)</span></span>
+<span id="L46"><span class="lineNum">      46</span>                 :             :         internal</span>
+<span id="L47"><span class="lineNum">      47</span>                 :             :         pure</span>
+<span id="L48"><span class="lineNum">      48</span>                 :             :         returns (address hookAddress)</span>
+<span id="L49"><span class="lineNum">      49</span>                 :             :     {</span>
+<span id="L50"><span class="lineNum">      50</span>                 :<span class="tlaGNC">        9632 :         return address(</span></span>
+<span id="L51"><span class="lineNum">      51</span>                 :             :             uint160(uint256(keccak256(abi.encodePacked(bytes1(0xFF), deployer, salt, keccak256(creationCodeWithArgs)))))</span>
+<span id="L52"><span class="lineNum">      52</span>                 :             :         );</span>
+<span id="L53"><span class="lineNum">      53</span>                 :             :     }</span>
+<span id="L54"><span class="lineNum">      54</span>                 :             : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.3-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

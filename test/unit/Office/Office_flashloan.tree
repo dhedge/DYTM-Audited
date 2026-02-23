@@ -1,0 +1,12 @@
+Office_flashloan
+├── When token is present in the Office
+│   ├── Given enough liquidity
+│   │   ├── When the loaner returns all tokens
+│   │   │   ├── It should allow the flashloan.
+│   │   │   └── It should not change the final token balance of the Office.
+│   │   └── When the loaner does not return enough tokens
+│   │       └── It should revert.
+│   └── Given not enough liquidity
+│       └── It should revert.
+└── When token is not present in the Office
+    └── It should revert.

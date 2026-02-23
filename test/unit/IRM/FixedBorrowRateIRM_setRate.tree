@@ -1,0 +1,8 @@
+FixedBorrowIRM_setRate
+├── When reserve does not exist
+│   └── It should set the rate correctly.
+└── When reserve exists
+    ├── When reserve is not borrowable
+    │   └── It should set the rate correctly.
+    └── When reserve is borrowable
+        └── It should set the rate correctly.

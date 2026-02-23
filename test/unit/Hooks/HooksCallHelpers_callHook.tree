@@ -1,0 +1,31 @@
+HooksCallHelpers_callHook
+├── Given all hooks set
+│   ├── When assets are supplied
+│   │   └── It should trigger before and after hooks
+│   ├── When collateral is switched
+│   │   └── It should trigger before and after hooks
+│   ├── When collateral is withdrawn
+│   │   └── It should trigger before and after hooks
+│   ├── When assets are borrowed
+│   │   └── It should trigger before and after hooks
+│   ├── When debt is repaid
+│   │   └── It should trigger before and after hooks
+│   ├── When collateral is liquidated
+│   │   └── It should trigger before and after hooks
+│   └── When supply is migrated
+│       └── It should trigger before and after hooks
+└── Given no hooks set
+    ├── When assets are supplied
+    │   └── It should not trigger any hooks
+    ├── When collateral is switched
+    │   └── It should not trigger any hooks
+    ├── When collateral is withdrawn
+    │   └── It should not trigger any hooks
+    ├── When assets are borrowed
+    │   └── It should not trigger any hooks
+    ├── When debt is repaid
+    │   └── It should not trigger any hooks
+    ├── When collateral is liquidated
+    │   └── It should not trigger any hooks
+    └── When supply is migrated
+        └── It should not trigger any hooks

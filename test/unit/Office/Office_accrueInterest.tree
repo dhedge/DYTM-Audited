@@ -1,0 +1,21 @@
+Office_accrueInterest
+├── When reserve does not exist
+│   └── It should return 0.
+│       └── Because the asset is not borrowable as it's not supported.
+└── When reserve exists
+    ├── When reserve is not borrowable
+    │   └── It should return 0.
+    │       └── Because the asset is not borrowable.
+    └── When reserve is borrowable
+        ├── When utilisation and rate is fixed and performance fee is not set
+        │   └── It should verify that interest paid by borrowers matches the interest earned by lenders.
+        ├── When utilisation is fixed and performance fee is set
+        │   └── It should verify that interest paid by borrowers matches the interest earned by lenders + performance fee.
+        ├── When utilisation is variable and rate is fixed and performance fee is not set
+        │   └── It should verify that interest paid by borrowers matches the interest earned by lenders.
+        ├── When utilisation is variable and rate is fixed and performance fee is set
+        │   └── It should verify that interest paid by borrowers matches the interest earned by lenders + performance fee.
+        ├── When utilisation is variable and rate is variable and performance fee is not set
+        │   └── It should verify that interest paid by borrowers matches the interest earned by lenders.
+        └── When utilisation is variable and rate is variable and performance fee is set
+            └── It should verify that interest paid by borrowers matches the interest earned by lenders + performance fee.

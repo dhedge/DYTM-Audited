@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120">
+    <style>
+        .label { font-family: monospace; font-size: 14px; fill: #333; }
+        .bit-label { font-family: monospace; font-size: 12px; fill: #666; }
+        .rect { stroke: #333; stroke-width: 1; fill: #fff; }
+        .rect-market { fill: #d4edda; }
+        .rect-asset { fill: #f8d7da; }
+    </style>
+    <rect x="10" y="40" width="580" height="40" class="rect"/>
+    <rect x="10" y="40" width="255" height="40" class="rect rect-market"/>
+    <rect x="265" y="40" width="325" height="40" class="rect rect-asset"/>
+
+    <text x="137.5" y="65" text-anchor="middle" class="label">MarketId (88 bits)</text>
+    <text x="427.5" y="65" text-anchor="middle" class="label">Asset Address (160 bits)</text>
+
+    <text x="10" y="30" class="bit-label">247</text>
+    <text x="265" y="30" class="bit-label">159</text>
+    <text x="590" y="30" text-anchor="end" class="bit-label">0</text>
+</svg>

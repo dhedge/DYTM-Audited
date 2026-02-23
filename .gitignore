@@ -1,0 +1,21 @@
+# Compiler files
+cache/
+out/
+
+# Ignore broadcast files
+broadcast
+
+# Dotenv file
+.env
+
+# Node modules
+node_modules
+
+# MacOS specific file
+.DS_Store
+
+# VSCode file
+.vscode
+
+# Soldeer
+dependencies

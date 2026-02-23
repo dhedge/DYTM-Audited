@@ -1,0 +1,24 @@
+Office_donateToReserve
+├── When reserve exists
+│   ├── Given reserve is not empty
+│   │   ├── It should allow donation to the reserve.
+│   │   └── It should increase the supplied amount of the reserve.
+│   ├── Given reserve is empty
+│   │   └── It should revert.
+│   │       └── With `Office__ReserveIsEmpty`.
+│   └── Given reserve is borrowable
+│       └── When the account has a debt position
+│           └── Given account has a bad debt
+│               └── Given account is liquidated
+│                   ├── It should increase the supplied amount of the reserve.
+│                   └── It should increase the share value of the LP token.
+└── When reserve is not supported
+    ├── Given reserve is not empty
+    │   ├── It should allow donation to the reserve.
+    │   └── It should increase the supplied amount of the reserve.
+    ├── Given reserve is empty
+    │   └── It should revert.
+    │       └── With `Office__ReserveIsEmpty`.
+    └── Given caller is not authorized
+        └── It should revert.
+            └── With `Office__NotOfficer`.

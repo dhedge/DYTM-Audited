@@ -1,0 +1,17 @@
+Office_createMarket
+├── Given valid parameters
+│   └── It should create a market.
+└── When parameters are invalid
+    ├── Given null address for IRM
+    │   └── It should revert.
+    │       └── With `Office__ZeroAddress`.
+    ├── Given null address for weights
+    │   └── It should revert.
+    │       └── With `Office__ZeroAddress`.
+    ├── Given null address for oracle module
+    │   └── It should revert.
+    │       └── With `Office__ZeroAddress`.
+    └── Given some hooks permissions
+        └── When hooks address is null
+            └── It should revert.
+                └── With `Office__ZeroAddress`.

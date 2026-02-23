@@ -1,0 +1,61 @@
+Office_switchCollateral
+├── Given enough shares
+│   ├── When the user switches collateral from escrow to lending
+│   │   ├── It should switch a escrow collateral to lending collateral.
+│   │   ├── It should increase the supplied amount.
+│   │   ├── It should burn the escrow shares.
+│   │   └── It should mint the lending shares.
+│   ├── When the user switches collateral from lending to escrow
+│   │   ├── Given enough liquidity to switch
+│   │   │   ├── It should switch a lending collateral to escrow collateral.
+│   │   │   ├── It should decrease the supplied amount.
+│   │   │   ├── It should burn the lending shares.
+│   │   │   └── It should mint the escrow shares.
+│   │   └── Given not enough liquidity to switch
+│   │       └── It should revert.
+│   │           └── With `Office__InsufficientLiquidity` error.
+│   ├── When the account has a debt position
+│   │   ├── Given switching to collateral with higher weight
+│   │   │   └── It should allow the user to switch collateral.
+│   │   └── Given switching to collateral with lower weight
+│   │       ├── When the account will become unhealthy
+│   │       │   └── It should revert.
+│   │       │       └── With `Office__AccountNotHealthy` error.
+│   │       └── When the account will remain healthy
+│   │           └── It should allow the user to switch collateral.
+│   ├── When the user provides max uint256 shares to switch
+│   │   ├── When the user switches collateral from escrow to lending
+│   │   │   ├── It should switch the entire escrow balance of the user.
+│   │   │   ├── It should increase the supplied amount.
+│   │   │   ├── It should burn the entire escrow shares of the user.
+│   │   │   └── It should mint the correct amount of lending shares.
+│   │   └── When the user switches collateral from lending to escrow
+│   │       └── Given enough liquidity to switch
+│   │           ├── It should switch the entire lending balance of the user.
+│   │           ├── It should decrease the supplied amount.
+│   │           ├── It should burn the entire lending shares of the user.
+│   │           └── It should mint the correct amount of escrow shares.
+│   └── When the user provides assets amount
+│       ├── Given the amount is less than the balance of the account
+│       │   ├── When the user switches collateral from escrow to lending
+│       │   │   ├── It should switch the specified amount of escrow to lending.
+│       │   │   ├── It should increase the supplied amount.
+│       │   │   ├── It should burn the correct amount of escrow shares.
+│       │   │   └── It should mint the correct amount of lending shares.
+│       │   └── When the user switches collateral from lending to escrow
+│       │       └── Given enough liquidity to switch
+│       │           ├── It should switch the specified amount of lending to escrow.
+│       │           ├── It should decrease the supplied amount.
+│       │           ├── It should burn the correct amount of lending shares.
+│       │           └── It should mint the correct amount of escrow shares.
+│       └── Given the amount is more than the balance of the account
+│           ├── When the user switches collateral from escrow to lending
+│           │   └── It should revert.
+│           │       └── With `IRegistry.Registry__InsufficientBalance` error.
+│           └── When the user switches collateral from lending to escrow
+│               └── Given enough liquidity to switch
+│                   └── It should revert.
+│                       └── With `IRegistry.Registry__InsufficientBalance` error.
+└── Given not enough shares
+    └── It should revert.
+        └── With `Office__InsufficientBalance` error.

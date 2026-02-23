@@ -1,0 +1,29 @@
+HooksCallHelpers_hasPermission
+├── Given supply hooks enabled
+│   └── It should return true
+├── Given supply hooks are not enabled
+│   └── It should return false
+├── Given switch collateral hooks enabled
+│   └── It should return true
+├── Given switch collateral hooks are not enabled
+│   └── It should return false
+├── Given withdraw collateral hooks enabled
+│   └── It should return true
+├── Given withdraw collateral hooks are not enabled
+│   └── It should return false
+├── Given borrow hooks enabled
+│   └── It should return true
+├── Given borrow hooks are not enabled
+│   └── It should return false
+├── Given repay hooks enabled
+│   └── It should return true
+├── Given repay hooks are not enabled
+│   └── It should return false
+├── Given liquidate hooks enabled
+│   └── It should return true
+├── Given liquidate hooks are not enabled
+│   └── It should return false
+├── Given migrate supply hooks enabled
+│   └── It should return true
+└── Given migrate supply hooks are not enabled
+    └── It should return false

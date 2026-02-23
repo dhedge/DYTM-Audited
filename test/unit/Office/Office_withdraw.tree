@@ -1,0 +1,79 @@
+Office_withdraw
+├── Give account is healthy
+│   ├── When withdrawing lent assets from a user account
+│   │   ├── It should redeem correct amount of shares.
+│   │   ├── It should update the reserve supplied amount.
+│   │   └── It should give back correct amount of assets.
+│   ├── When withdrawing lent assets from an account and caller is not authorized
+│   │   └── It should revert.
+│   ├── When withdrawing lent assets from an isolated account
+│   │   ├── It should redeem correct amount of shares.
+│   │   ├── It should update the reserve supplied amount.
+│   │   └── It should give back correct amount of assets.
+│   ├── When withdrawing lent assets to a random address
+│   │   ├── It should redeem correct amount of shares.
+│   │   ├── It should update the reserve supplied amount.
+│   │   └── It should give back correct amount of assets.
+│   ├── When withdrawing escrowed assets from a user account
+│   │   ├── It should redeem correct amount of shares.
+│   │   ├── It should not update the lending reserve supplied amount.
+│   │   └── It should give back correct amount of assets.
+│   ├── When withdrawing escrowed assets from an account and caller is not authorized
+│   │   └── It should revert.
+│   ├── When withdrawing escrowed assets from an isolated account
+│   │   ├── It should redeem correct amount of shares.
+│   │   ├── It should not update the lending reserve supplied amount.
+│   │   └── It should give back correct amount of assets.
+│   ├── When withdrawing escrowed assets to a random address
+│   │   ├── It should redeem correct amount of shares.
+│   │   ├── It should not update the lending reserve supplied amount.
+│   │   └── It should give back correct amount of assets.
+│   ├── When withdrawing using max uint256 shares amount
+│   │   ├── When withdrawing lent assets from a user account
+│   │   │   ├── It should update the reserve supplied amount.
+│   │   │   ├── It should give back correct amount of assets.
+│   │   │   └── It should burn the entire lent shares of the user.
+│   │   └── When withdrawing escrowed assets from a user account
+│   │       ├── It should not update the lending reserve supplied amount.
+│   │       ├── It should give back correct amount of assets.
+│   │       └── It should burn the entire escrow shares of the user.
+│   ├── When withdrawing using assets amount
+│   │   ├── When withdrawing lent assets from a user account
+│   │   │   ├── Given the amount is less than the balance of the account
+│   │   │   │   ├── It should update the reserve supplied amount.
+│   │   │   │   ├── It should give back correct amount of assets.
+│   │   │   │   └── It should burn the correct amount of lent shares.
+│   │   │   └── Given the amount is more than the balance of the account
+│   │   │       └── It should revert.
+│   │   │           └── With underflow panic error.
+│   │   └── When withdrawing escrowed assets from a user account
+│   │       ├── Given the amount is less than the balance of the account
+│   │       │   ├── It should not update the lending reserve supplied amount.
+│   │       │   ├── It should give back correct amount of assets.
+│   │       │   └── It should burn the correct amount of escrow shares.
+│   │       └── Given the amount is more than the balance of the account
+│   │           └── It should revert.
+│   │               └── With `IRegistry.Registry__InsufficientBalance` error.
+│   └── When both assets and shares are provided
+│       ├── It should revert.
+│       └── With `IOffice.Office__AssetsAndSharesNonZero` error.
+├── Given the account is unhealthy
+│   ├── When withdrawing lent assets from an account
+│   │   └── It should revert.
+│   └── When withdrawing escrowed assets from an account
+│       └── It should revert.
+└── When the account has a debt position
+    ├── Given the account will be healthy
+    │   ├── When withdrawing some lent assets from an account
+    │   │   ├── It should redeem correct amount of shares.
+    │   │   ├── It should update the reserve supplied amount.
+    │   │   └── It should give back correct amount of assets.
+    │   └── When withdrawing some escrowed assets from an account
+    │       ├── It should redeem correct amount of shares.
+    │       ├── It should not update the lending reserve supplied amount.
+    │       └── It should give back correct amount of assets.
+    └── Given the account will become unhealthy
+        ├── When withdrawing all lent assets from an account
+        │   └── It should revert.
+        └── When withdrawing all escrowed assets from an account
+            └── It should revert.

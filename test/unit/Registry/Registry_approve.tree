@@ -1,0 +1,26 @@
+Registry_approve
+└── When reserve exists
+    ├── When caller is owner
+    │   ├── Given account is not isolated
+    │   │   └── It should approve the other address to spend tokens.
+    │   ├── Given account is isolated
+    │   │   └── It should approve the other address to spend tokens.
+    │   ├── When approving different token types
+    │   │   └── It should approve the other address to spend tokens.
+    │   └── When approving zero amount
+    │       └── It should allow the approval transaction.
+    ├── When caller is operator
+    │   └── Given account is isolated
+    │       ├── It should approve the other address to spend tokens.
+    │       └── It shouldn't change the allowance amount returned by `allowance` for the owner.
+    ├── When caller is unauthorized
+    │   └── Given account is isolated
+    │       ├── It should approve the other address to spend tokens.
+    │       └── It shouldn't change the allowance amount returned by `allowance` for the owner.
+    ├── When spender account is an isolated account // Doesn't matter who is the caller.
+    │   └── It should revert.
+    │       └── With `Registry__InvalidSpender` error.
+    └── When reserve does not exist
+        └── When caller is owner
+            └── Given account is not isolated
+                └── It should approve the other address to spend tokens.

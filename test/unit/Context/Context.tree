@@ -1,0 +1,9 @@
+// Note that this test file doesn't contain tests for `maintainContext`. That will be handled in `Office_delegationCall`
+// test file.
+DelegationContext
+└── When caller is authorized
+    └── When ongoing delegation call
+        ├── It should set the context correctly.
+        ├── It should return `true` when `isOngoingDelegationCall` is called.
+        ├── It should return `true` when `isOngoingDelegationCallForAccount` is called with the correct account.
+        └── It should return `false` when `isOngoingDelegationCallForAccount` is called with an incorrect account.

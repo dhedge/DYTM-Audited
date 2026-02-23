@@ -1,0 +1,15 @@
+LinearKinkIRM_borrowRate
+├── When reserve is not supported
+│   └── It should return 0.
+└── When reserve exists
+    ├── When reserve is not borrowable
+    │   └── It should return 0.
+    └── When reserve is borrowable
+        ├── When utilisation is under optimal utilisation
+        │   └── It should return borrow rate below the kink.
+        ├── When utilisation is at optimal utilisation
+        │   └── It should return borrow rate at the kink.
+        ├── When utilisation is above optimal utilisation
+        │   └── It should return borrow rate above the kink.
+        └── When utilisation is maxed out
+            └── It should return max borrow rate.

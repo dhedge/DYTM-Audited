@@ -1,0 +1,31 @@
+OfficeERC6909ToERC20Wrapper
+├── When reserve exists
+│   ├── When officer registers a token id as ERC20
+│   │   ├── It should deploy a new `WrappedERC6909ERC20` contract.
+│   │   └── It should map the token id to the deployed `WrappedERC6909ERC20` contract.
+│   ├── When officer reregisters a token id as ERC20
+│   │   └── It should revert.
+│   │       └── With `OfficeERC6909ToERC20Wrapper__ERC20AlreadyRegistered` error.
+│   ├── When a random address tries to register a token id as ERC20
+│   │   └── It should revert.
+│   │       └── With `OfficeERC6909ToERC20Wrapper__NotOfficer` error.
+│   ├── When calling wrap function
+│   │   ├── Given the token id is registered
+│   │   │   ├── It should mint wrapped ERC20 tokens to the caller.
+│   │   │   ├── It should increase the total supply of the wrapped ERC20 tokens.
+│   │   │   └── It should transfer the underlying ERC6909 tokens from the caller to the wrapper contract.
+│   │   └── Given the token id is not registered
+│   │       └── It should revert.
+│   │           └── Because the erc20 token contract is address(0).
+│   └── When calling unwrap function
+│       ├── Given the token id is registered
+│       │   ├── It should burn wrapped ERC20 tokens from the caller.
+│       │   ├── It should decrease the total supply of the wrapped ERC20 tokens.
+│       │   └── It should transfer the underlying ERC6909 tokens from the wrapper contract to the caller.
+│       └── Given the token id is not registered
+│           └── It should revert.
+│               └── Because the erc20 token contract is address(0).
+└── When reserve does not exist
+    └── When a random address tries to register a token id as ERC20
+        └── It should revert.
+            └── Due to `getOfficer` call failing.

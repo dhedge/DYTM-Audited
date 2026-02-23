@@ -1,0 +1,14 @@
+dependencies/
+
+// Types should be treated as libraries.
+// In solhint, internal functions and variable names in libraries can begin with an underscore.
+types/
+
+// We use global imports in our test contracts, which is not recommended by solhint.
+test/
+
+// Storage Accessors should be treated as a library.
+src/libraries/StorageAccessors.sol
+
+// Parsing error encountered likely due to `transient` keyword.
+src/abstracts/storages/TransientStorage.sol

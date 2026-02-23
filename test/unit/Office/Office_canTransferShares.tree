@@ -1,0 +1,11 @@
+Office_canTransferShares
+└── When reserve exists
+    ├── Given the market config restricts transfers from or to an account
+    │   ├── When transferring collateral shares between accounts
+    │   │   └── It should revert.
+    │   │       └── With `Office__TransferNotAllowed`.
+    │   └── When transferring debt shares between accounts // Assuming caller is authorized for both accounts
+    │       └── It should revert.
+    │           └── With `Office__TransferNotAllowed`.
+    └── Given the market config allows transfers between accounts
+        └── It should transfer shares successfully.

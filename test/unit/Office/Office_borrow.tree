@@ -1,0 +1,53 @@
+Office_borrow
+├── When reserve exists
+│   ├── Given enough liquidity in the reserve
+│   │   ├── When using supplied plus escrowed assets
+│   │   │   ├── Given account is healthy
+│   │   │   │   ├── Given caller is the owner of the account
+│   │   │   │   │   ├── It should allow borrowing.
+│   │   │   │   │   ├── It should mint the correct amount of debt shares.
+│   │   │   │   │   └── It should update the reserve borrowed amount.
+│   │   │   │   ├── Given the caller is the operator of the owner
+│   │   │   │   │   ├── It should allow borrowing.
+│   │   │   │   │   ├── It should mint the correct amount of debt shares.
+│   │   │   │   │   └── It should update the reserve borrowed amount.
+│   │   │   │   └── Given the caller is not authorized for the account
+│   │   │   │       ├── Given account is not isolated
+│   │   │   │       │   └── It should revert.
+│   │   │   │       └── Given account is isolated
+│   │   │   │           └── It should revert.
+│   │   │   ├── Given the account is unhealthy
+│   │   │   │   └── It should revert.
+│   │   │   ├── Given min debt amount USD is not met after borrowing
+│   │   │   │   └── It should revert.
+│   │   │   │       └── With `Office__DebtBelowMinimum` error.
+│   │   │   └── Given the account already has a debt position
+│   │   │       ├── When another token is being borrowed
+│   │   │       │   └── It should revert.
+│   │   │       │       └── With `Registry__DebtIdMismatch` error.
+│   │   │       └── When the same token is being borrowed
+│   │   │           ├── It should allow borrowing.
+│   │   │           ├── It should mint the correct amount of debt shares.
+│   │   │           └── It should update the reserve borrowed amount.
+│   │   └── When taking an undercollateralized loan
+│   │       ├── Given the receiver is a valid loan receiver
+│   │       │   ├── Given the receiver returns sufficient collateral and lends them
+│   │       │   │   ├── It should allow borrowing.
+│   │       │   │   ├── It should mint the correct amount of debt shares.
+│   │       │   │   ├── It should update the reserve borrowed amount.
+│   │       │   │   └── It should mint the correct amount of lending shares.
+│   │       │   ├── Given the receiver returns sufficient collateral and escrows them
+│   │       │   │   ├── It should allow borrowing.
+│   │       │   │   ├── It should mint the correct amount of debt shares.
+│   │       │   │   ├── It should update the reserve borrowed amount.
+│   │       │   │   └── It should mint the correct amount of escrow shares.
+│   │       │   └── Given the receiver does not return sufficient collateral
+│   │       │       └── It should revert.
+│   │       └── Given the receiver is an invalid loan receiver
+│   │           └── It should revert.
+│   ├── Given insufficient liquidity in the reserve
+│   │   └── It should revert.
+│   └── When reserve is not borrowable
+│       └── It should revert.
+└── When reserve does not exist
+    └── It should revert.

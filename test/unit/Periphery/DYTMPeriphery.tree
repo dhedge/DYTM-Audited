@@ -1,0 +1,17 @@
+DYTMPeriphery
+├── When the account has a debt position
+│   ├── When getAccountPosition is called
+│   │   └── It should return the correct position details.
+│   ├── When getAccountDebtValueUSD is called
+│   │   └── It should return the correct debt value in USD.
+│   └── When getAccountCollateralValueUSD is called
+│       ├── It should return the correct collateral value in USD.
+│       └── It should return the correct weighted collateral value in USD.
+├── When shareToAssets is called
+│   └── It should return the correct asset value.
+├── When assetsToShare is called
+│   └── It should return the correct share value.
+├── When getExchangeRate is called
+│   └── It should return the correct exchange rate.
+└── When getReserveInfo is called
+    └── It should return the correct reserve information.

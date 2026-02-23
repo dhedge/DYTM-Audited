@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - lcov.info - src/libraries/TokenHelpers.sol</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory src/libraries">src/libraries</a> - TokenHelpers.sol<span style="font-size: 80%;"> (source / <a href="TokenHelpers.sol.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">lcov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryHi">95.2&nbsp;%</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntry">20</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-12-16 19:38:54</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntryLo">50.0&nbsp;%</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">2</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">             Branch data     Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>                 :             : // SPDX-License-Identifier: MIT</span>
+<span id="L2"><span class="lineNum">       2</span>                 :             : pragma solidity 0.8.29;</span>
+<span id="L3"><span class="lineNum">       3</span>                 :             : </span>
+<span id="L4"><span class="lineNum">       4</span>                 :             : import {IERC20} from &quot;@openzeppelin-contracts/interfaces/IERC20.sol&quot;;</span>
+<span id="L5"><span class="lineNum">       5</span>                 :             : import {MarketId, ReserveKey} from &quot;../types/Types.sol&quot;;</span>
+<span id="L6"><span class="lineNum">       6</span>                 :             : </span>
+<span id="L7"><span class="lineNum">       7</span>                 :             : enum TokenType {</span>
+<span id="L8"><span class="lineNum">       8</span>                 :             :     NONE, // 0</span>
+<span id="L9"><span class="lineNum">       9</span>                 :             :     ESCROW, // 1</span>
+<span id="L10"><span class="lineNum">      10</span>                 :             :     LEND, // 2</span>
+<span id="L11"><span class="lineNum">      11</span>                 :             :     DEBT, // 3</span>
+<span id="L12"><span class="lineNum">      12</span>                 :             :     ISOLATED_ACCOUNT // 4</span>
+<span id="L13"><span class="lineNum">      13</span>                 :             : }</span>
+<span id="L14"><span class="lineNum">      14</span>                 :             : </span>
+<span id="L15"><span class="lineNum">      15</span>                 :             : /// @title TokenHelpers</span>
+<span id="L16"><span class="lineNum">      16</span>                 :             : /// @notice A library for handling tokenId related operations.</span>
+<span id="L17"><span class="lineNum">      17</span>                 :             : /// @author Chinmay &lt;chinmay@dhedge.org&gt;</span>
+<span id="L18"><span class="lineNum">      18</span>                 :             : library TokenHelpers {</span>
+<span id="L19"><span class="lineNum">      19</span>                 :             :     /// @dev Function to get the token type from a tokenId.</span>
+<span id="L20"><span class="lineNum">      20</span>                 :             :     /// @dev If the least significant 160 bits of the tokenId are zero and the top 96 bits are non-zero, it's an</span>
+<span id="L21"><span class="lineNum">      21</span>                 :             :     ///      isolated account token. Otherwise, provided the next 88 bits and the most significant byte bits are non-zero,</span>
+<span id="L22"><span class="lineNum">      22</span>                 :             :     ///      the token type is stored in the most significant byte of the tokenId.</span>
+<span id="L23"><span class="lineNum">      23</span>                 :             :     /// @dev [!WARNING] It will return `TokenType.NONE` instead of reverting.</span>
+<span id="L24"><span class="lineNum">      24</span>                 :             :     /// @param tokenId The token ID to convert.</span>
+<span id="L25"><span class="lineNum">      25</span>                 :             :     /// @return tokenType The type of the token, represented as a uint8.</span>
+<span id="L26"><span class="lineNum">      26</span>                 :<span class="tlaGNC">        4334 :     function getTokenType(uint256 tokenId) internal pure returns (TokenType tokenType) {</span></span>
+<span id="L27"><span class="lineNum">      27</span>                 :<span class="tlaGNC">        4334 :         uint160 lsb160 = uint160(tokenId);</span></span>
+<span id="L28"><span class="lineNum">      28</span>                 :<span class="tlaGNC">        4334 :         uint96 msb96 = uint96(tokenId &gt;&gt; 160);</span></span>
+<span id="L29"><span class="lineNum">      29</span>                 :<span class="tlaGNC">        4334 :         uint8 typeByte = uint8(msb96 &gt;&gt; 88);</span></span>
+<span id="L30"><span class="lineNum">      30</span>                 :             : </span>
+<span id="L31"><span class="lineNum">      31</span>         [<span class="tlaGBC" title="Branch 0 was taken 428 times"> + </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaGNC">        4334 :         if (lsb160 == 0 &amp;&amp; msb96 != 0) {</span></span>
+<span id="L32"><span class="lineNum">      32</span>                 :<span class="tlaGNC">         428 :             return TokenType.ISOLATED_ACCOUNT;</span></span>
+<span id="L33"><span class="lineNum">      33</span>         [<span class="tlaGBC" title="Branch 0 was taken 3906 times"> + </span><span class="tlaUNC" title="Branch 1 was not executed"> # </span>]:<span class="tlaGNC">        3906 :         } else if (lsb160 != 0 &amp;&amp; msb96 != 0 &amp;&amp; typeByte &gt; 0) {</span></span>
+<span id="L34"><span class="lineNum">      34</span>                 :             :             // The token is one of ESCROW, LEND, DEBT type.</span>
+<span id="L35"><span class="lineNum">      35</span>                 :<span class="tlaGNC">        3906 :             return TokenType(typeByte);</span></span>
+<span id="L36"><span class="lineNum">      36</span>                 :             :         } else {</span>
+<span id="L37"><span class="lineNum">      37</span>                 :<span class="tlaUNC">           0 :             return TokenType.NONE;</span></span>
+<span id="L38"><span class="lineNum">      38</span>                 :             :         }</span>
+<span id="L39"><span class="lineNum">      39</span>                 :             :     }</span>
+<span id="L40"><span class="lineNum">      40</span>                 :             : </span>
+<span id="L41"><span class="lineNum">      41</span>                 :             :     /// @dev Function to get the MarketId from a tokenId.</span>
+<span id="L42"><span class="lineNum">      42</span>                 :             :     /// @dev The MarketId is stored in the bits [247:160] of the tokenId.</span>
+<span id="L43"><span class="lineNum">      43</span>                 :             :     /// @dev We can extract it by right shifting the tokenId by 160 bits and casting it to a uint88.</span>
+<span id="L44"><span class="lineNum">      44</span>                 :<span class="tlaGNC">         970 :     function getMarketId(uint256 tokenId) internal pure returns (MarketId marketId) {</span></span>
+<span id="L45"><span class="lineNum">      45</span>                 :<span class="tlaGNC">         970 :         return MarketId.wrap(uint88(tokenId &gt;&gt; 160));</span></span>
+<span id="L46"><span class="lineNum">      46</span>                 :             :     }</span>
+<span id="L47"><span class="lineNum">      47</span>                 :             : </span>
+<span id="L48"><span class="lineNum">      48</span>                 :             :     /// @dev Function to get the asset address from a tokenId.</span>
+<span id="L49"><span class="lineNum">      49</span>                 :             :     /// @dev The asset address is the last 160 bits of the token ID.</span>
+<span id="L50"><span class="lineNum">      50</span>                 :             :     /// @param tokenId The token ID to convert.</span>
+<span id="L51"><span class="lineNum">      51</span>                 :             :     /// @return asset The IERC20 asset corresponding to the tokenId.</span>
+<span id="L52"><span class="lineNum">      52</span>                 :<span class="tlaGNC">         146 :     function getAsset(uint256 tokenId) internal pure returns (IERC20 asset) {</span></span>
+<span id="L53"><span class="lineNum">      53</span>                 :<span class="tlaGNC">         146 :         return IERC20(address(uint160(tokenId)));</span></span>
+<span id="L54"><span class="lineNum">      54</span>                 :             :     }</span>
+<span id="L55"><span class="lineNum">      55</span>                 :             : </span>
+<span id="L56"><span class="lineNum">      56</span>                 :             :     /// @dev Function to get the ReserveKey from a tokenId.</span>
+<span id="L57"><span class="lineNum">      57</span>                 :             :     /// @dev The ReserveKey is the last 248 bits of the tokenId consisting of the MarketId and the asset address.</span>
+<span id="L58"><span class="lineNum">      58</span>                 :             :     /// @dev We can extract it by casting the tokenId to a uint248 and then wrapping it in a ReserveKey.</span>
+<span id="L59"><span class="lineNum">      59</span>                 :             :     /// @param tokenId The token ID to convert.</span>
+<span id="L60"><span class="lineNum">      60</span>                 :             :     /// @return key The ReserveKey corresponding to the tokenId.</span>
+<span id="L61"><span class="lineNum">      61</span>                 :<span class="tlaGNC">        1902 :     function getReserveKey(uint256 tokenId) internal pure returns (ReserveKey key) {</span></span>
+<span id="L62"><span class="lineNum">      62</span>                 :<span class="tlaGNC">        1902 :         return ReserveKey.wrap(uint248(tokenId));</span></span>
+<span id="L63"><span class="lineNum">      63</span>                 :             :     }</span>
+<span id="L64"><span class="lineNum">      64</span>                 :             : </span>
+<span id="L65"><span class="lineNum">      65</span>                 :             :     /// @dev Function to check if a tokenId is a collateral token.</span>
+<span id="L66"><span class="lineNum">      66</span>                 :             :     /// @dev A token is considered collateral if it is either an escrow token or a share token.</span>
+<span id="L67"><span class="lineNum">      67</span>                 :             :     /// @param tokenId The token ID to check.</span>
+<span id="L68"><span class="lineNum">      68</span>                 :             :     /// @return result True if the tokenId is a collateral token, false otherwise.</span>
+<span id="L69"><span class="lineNum">      69</span>                 :<span class="tlaGNC">        1533 :     function isCollateral(uint256 tokenId) internal pure returns (bool result) {</span></span>
+<span id="L70"><span class="lineNum">      70</span>                 :<span class="tlaGNC">        1533 :         TokenType tokenType = getTokenType(tokenId);</span></span>
+<span id="L71"><span class="lineNum">      71</span>                 :             : </span>
+<span id="L72"><span class="lineNum">      72</span>                 :<span class="tlaGNC">        1533 :         return (tokenType == TokenType.ESCROW || tokenType == TokenType.LEND);</span></span>
+<span id="L73"><span class="lineNum">      73</span>                 :             :     }</span>
+<span id="L74"><span class="lineNum">      74</span>                 :             : </span>
+<span id="L75"><span class="lineNum">      75</span>                 :             :     /// @dev Function to check if a tokenId is a debt token.</span>
+<span id="L76"><span class="lineNum">      76</span>                 :             :     /// @param tokenId The token ID to check.</span>
+<span id="L77"><span class="lineNum">      77</span>                 :             :     /// @return result True if the tokenId is a debt token, false otherwise.</span>
+<span id="L78"><span class="lineNum">      78</span>                 :<span class="tlaGNC">           6 :     function isDebt(uint256 tokenId) internal pure returns (bool result) {</span></span>
+<span id="L79"><span class="lineNum">      79</span>                 :<span class="tlaGNC">           6 :         TokenType tokenType = getTokenType(tokenId);</span></span>
+<span id="L80"><span class="lineNum">      80</span>                 :             : </span>
+<span id="L81"><span class="lineNum">      81</span>                 :<span class="tlaGNC">           6 :         return (tokenType == TokenType.DEBT);</span></span>
+<span id="L82"><span class="lineNum">      82</span>                 :             :     }</span>
+<span id="L83"><span class="lineNum">      83</span>                 :             : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.3-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+SimpleAccountWhitelist
+├── When deploying the hook
+│   ├── Given the hook address has wrong hook flags
+│   │   └── It should revert.
+│   │       └── With `BaseHook_IncorrectHooks` error.
+│   └── Given the hook address has correct hook flags
+│       ├── It should deploy the hook.
+│       ├── It should correctly set the MARKET_ID.
+│       ├── It should set the correct owner.
+│       └── It should set the correct office address.
+├── When whitelisting an account
+│   ├── Given caller is owner
+│   │   └── It should whitelist the account.
+│   └── Given caller is not owner
+│       └── It should revert.
+│           └── With `OwnableUnauthorizedAccount` error.
+├── When removing an account from whitelist
+│   ├── Given caller is owner
+│   │   └── It should remove the account from whitelist.
+│   └── Given caller is not owner
+│       └── It should revert.
+│           └── With `OwnableUnauthorizedAccount` error.
+├── When whitelisting a address
+│   ├── Given caller is owner
+│   │   └── It should whitelist the address.
+│   └── Given caller is not owner
+│       └── It should revert.
+│           └── With `OwnableUnauthorizedAccount` error.
+├── When removing an address from whitelist
+│   ├── Given caller is owner
+│   │   └── It should remove the address from whitelist.
+│   └── Given caller is not owner
+│       └── It should revert.
+│           └── With `OwnableUnauthorizedAccount` error.
+├── When supplying to the market
+│   ├── Given account is whitelisted
+│   │   └── It should allow the supply action.
+│   ├── Given account is not whitelisted
+│   │   └── It should revert.
+│   │       └── With `SimpleAccountWhitelist_NotWhitelisted` error.
+│   ├── Given account owner is whitelisted
+│   │   └── It should allow the supply action.
+│   └── Given account owner is not whitelisted
+│       └── It should revert.
+│           └── With `SimpleAccountWhitelist_NotWhitelisted` error.
+├── When borrowing from the market
+│   ├── Given account is whitelisted
+│   │   └── It should allow the borrow action.
+│   ├── Given account is not whitelisted
+│   │   └── It should revert.
+│   │       └── With `SimpleAccountWhitelist_NotWhitelisted` error.
+│   ├── Given account owner is whitelisted
+│   │   └── It should allow the borrow action.
+│   └── Given account owner is not whitelisted
+│       └── It should revert.
+│           └── With `SimpleAccountWhitelist_NotWhitelisted` error.
+├── When migrating supply to the market
+│   ├── Given destination market is the hook's designated market
+│   │   ├── Given account is whitelisted
+│   │   │   └── It should allow the migrate supply action.
+│   │   ├── Given account is not whitelisted
+│   │   │   └── It should revert.
+│   │   │       └── With `SimpleAccountWhitelist_NotWhitelisted` error.
+│   │   ├── Given account owner is whitelisted
+│   │   │   └── It should allow the migrate supply action.
+│   │   └── Given account owner is not whitelisted
+│   │       └── It should revert.
+│   │           └── With `SimpleAccountWhitelist_NotWhitelisted` error.
+│   └── Given destination market is not the hook's designated market
+│       └── It should allow the migrate supply action.
+└── When hook is not called by office
+    ├── Given it is supply hook
+    │   └── It should revert.
+    │       └── With `BaseHook_OnlyOffice` error.
+    ├── Given it is borrow hook
+    │   └── It should revert.
+    │       └── With `BaseHook_OnlyOffice` error.
+    └── Given it is migrate supply hook
+        └── It should revert.
+            └── With `BaseHook_OnlyOffice` error.

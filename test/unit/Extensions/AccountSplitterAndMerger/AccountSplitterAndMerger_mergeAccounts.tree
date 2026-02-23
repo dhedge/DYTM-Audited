@@ -1,0 +1,23 @@
+// Testing the internal function `_mergeAccounts`.
+AccountSplitterAndMerger_mergeAccounts
+├── Given account is healthy // Source account
+│   └── Given second account is setup
+│       ├── Given valid fraction
+│       │   ├── It should transfer correct fraction of collateral shares from source to recipient.
+│       │   └── It should transfer correct fraction of debt shares from source to recipient.
+│       ├── Given fraction is 1e18
+│       │   ├── It should transfer all collateral shares from source to recipient.
+│       │   └── It should transfer all debt shares from source to recipient.
+│       └── Given invalid fraction
+│           └── It should revert.
+│               └── With `AccountSplitterAndMerger__InvalidFraction`.
+├── Given account is unhealthy // Source account
+│   └── Given second account is setup
+│       └── It should revert.
+│           └── With `Office__AccountNotHealthy`.
+│               └── For the source account.
+└── When caller is unauthorized // For source account
+    └── Given second account is setup
+        └── It should revert.
+            └── With `AccountSplitterAndMerger__UnauthorizedCaller`.
+

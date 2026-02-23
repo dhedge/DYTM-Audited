@@ -1,0 +1,21 @@
+// Testing the internal function `_splitAccount`.
+AccountSplitterAndMerger_splitAccount
+├── Given account is healthy
+│   ├── Given valid fraction
+│   │   ├── It should check account is healthy before splitting.
+│   │   ├── It should create a new account with half the collateral shares.
+│   │   ├── It should seed the new account with half the debt shares.
+│   │   └── It should give the new account to the receiver.
+│   └── Given invalid fraction
+│       └── It should revert.
+│           └── With `AccountSplitterAndMerger__InvalidFraction`.
+├── Given account is unhealthy
+│   └── It should revert.
+│       └── With `Office__AccountNotHealthy`.
+│           └── For the new account.
+├── When caller is unauthorized
+│   └── It should revert.
+│       └── With `Office__UnauthorizedCaller`.
+└── When callback function called directly
+    └── It should revert.
+        └── With `AccountSplitterAndMerger_onlyOffice`.

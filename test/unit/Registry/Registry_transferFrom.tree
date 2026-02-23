@@ -1,0 +1,103 @@
+Registry_transferFrom
+├── When reserve exists
+│   ├── When transferring different lending and escrow token types
+│   │   ├── When spender is owner
+│   │   │   ├── Given account is not isolated
+│   │   │   │   ├── It should transfer the tokens to the spender.
+│   │   │   │   └── It should not change the allowance amount returned by `allowance`.
+│   │   │   └── Given account is isolated
+│   │   │       ├── It should transfer the tokens to the spender.
+│   │   │       └── It should not change the allowance amount returned by `allowance`.
+│   │   ├── When the spender has enough allowance
+│   │   │   ├── Given account is isolated
+│   │   │   │   ├── It should transfer the tokens to the spender.
+│   │   │   │   ├── It should add the tokenId to collateral token set of the spender.
+│   │   │   │   └── It should reduce the allowance amount returned by `allowance`.
+│   │   │   ├── Given account is not isolated
+│   │   │   │   ├── It should transfer the tokens to the spender.
+│   │   │   │   ├── It should add the tokenId to collateral token set of the spender.
+│   │   │   │   └── It should reduce the allowance amount returned by `allowance`.
+│   │   │   ├── Given amount is less than balance
+│   │   │   │   ├── It should allow the transfer.
+│   │   │   │   ├── It should add the tokenId to collateral token set of the spender.
+│   │   │   │   └── It should reduce the allowance amount returned by `allowance`.
+│   │   │   ├── Given amount is equal to balance
+│   │   │   │   ├── It should allow the transfer.
+│   │   │   │   ├── It should remove the tokenId from collateral token set of the owner.
+│   │   │   │   ├── It should add the tokenId to collateral token set of the spender.
+│   │   │   │   └── It should reduce the allowance amount returned by `allowance`.
+│   │   │   └── Given balance is insufficient
+│   │   │       └── It should revert.
+│   │   │           └── With `Registry__InsufficientBalance` error.
+│   │   ├── When the spender has insufficient allowance
+│   │   │   └── Given balance is sufficient
+│   │   │       └── It should revert.
+│   │   │           └── With `Registry__InsufficientAllowance` error.
+│   │   ├── When caller is operator
+│   │   │   └── Given account has enough balance
+│   │   │       ├── It should allow transfer.
+│   │   │       ├── It should add the tokenId to collateral token set of the receiver.
+│   │   │       └── It should not change the allowance amount returned by `allowance`.
+│   │   └── Given amount is zero
+│   │       ├── It should allow the transfer.
+│   │       ├── It should not change collateral token set of the owner or spender.
+│   │       ├── It should not change the balance of the owner or spender.
+│   │       └── It should not change the allowance amount returned by `allowance`.
+│   └── When transferring debt token type
+│       ├── Given amount is not zero
+│       │   ├── Given source account will be healthy
+│       │   │   ├── Given recipient account is owned by source account owner
+│       │   │   │   ├── Given spender has enough allowance
+│       │   │   │   │   ├── It should allow the transfer.
+│       │   │   │   │   ├── It should remove the tokenId as debt token. // Assuming entire debt is being transferred.
+│       │   │   │   │   ├── It should add the tokenId to debt token set of the spender.
+│       │   │   │   │   └── It should reduce the allowance of the spender for the source account.
+│       │   │   │   ├── Given spender is the owner of source account
+│       │   │   │   │   ├── It should allow the transfer.
+│       │   │   │   │   ├── It should remove the tokenId as debt token. // Assuming entire debt is being transferred
+│       │   │   │   │   ├── It should add the tokenId to debt token set of the spender.
+│       │   │   │   │   └── It should not change the allowance of the spender for the source account.
+│       │   │   │   ├── Given spender is operator of source account // Operators don't have permission to transfer debt tokens by default.
+│       │   │   │   │   └── Given spender does not have enough allowance
+│       │   │   │   │       └── It should revert.
+│       │   │   │   │           └── With `Registry__InsufficientAllowance` error.
+│       │   │   │   ├── Given spender does not have enough allowance
+│       │   │   │   │   └── It should revert.
+│       │   │   │   │       └── With `Registry__InsufficientAllowance` error.
+│       │   │   │   └── Given spender is a malicious caller during a delegation call flow // If the caller is not the delegatee but rather some other contract in the call chain.
+│       │   │   │       └── It should revert.
+│       │   │   │           └── With `Registry__InsufficientAllowance` error.
+│       │   │   └── Given recipient account is not owned by source account owner
+│       │   │       └── Given spender has enough allowance
+│       │   │           └── Given spender is owner of recipient account
+│       │   │               └── It should revert.
+│       │   │                   └── With the error `Registry__DifferentOwnersWhenTransferringDebt`.
+│       │   └── Given recipient account will be unhealthy
+│       │       └── It should revert.
+│       │           └── With `Office__AccountNotHealthy` error.
+│       └── Given amount is zero
+│           ├── It should allow the transfer.
+│           └── It should not change debt token set of the owner or spender.
+├── When transferring account token type
+│   ├── When caller is owner
+│   │   ├── Given amount is one
+│   │   │   └── It should allow the transfer of an account.
+│   │   ├── Given amount is zero
+│   │   │   └── It should allow the transaction but the account should not be transferred.
+│   │   └── Given amount is greater than one
+│   │       └── It should revert.
+│   │           └── With `Registry__InsufficientBalance` error.
+│   ├── When caller is operator
+│   │   ├── Given owner did not approve the operator for the account token
+│   │   │   └── It should revert.
+│   │   │       └── With `Registry__InsufficientAllowance` error.
+│   │   └── Given owner approved the operator for the account token
+│   │       └── Given amount is one
+│   │           └── It should allow the transfer of an account.
+│   └── When caller is unauthorized
+│       └── It should revert.
+│           └── With `Registry__InsufficientBalance` error.
+└── When reserve does not exist
+    └── When caller is operator
+        └── It should revert.
+            └── With `Registry__InsufficientBalance` error.

@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - lcov.info - test/mocks/MockWeights.sol</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory test/mocks">test/mocks</a> - MockWeights.sol<span style="font-size: 80%;"> (source / <a href="MockWeights.sol.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">lcov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryHi">90.0&nbsp;%</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">9</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2025-12-15 19:22:06</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntryLo">50.0&nbsp;%</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">1</td>
+          </tr>
+                  <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">             Branch data     Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>                 :             : // SPDX-License-Identifier: MIT</span>
+<span id="L2"><span class="lineNum">       2</span>                 :             : pragma solidity ^0.8.29;</span>
+<span id="L3"><span class="lineNum">       3</span>                 :             : </span>
+<span id="L4"><span class="lineNum">       4</span>                 :             : import {IERC20} from &quot;@openzeppelin-contracts/interfaces/IERC20.sol&quot;;</span>
+<span id="L5"><span class="lineNum">       5</span>                 :             : </span>
+<span id="L6"><span class="lineNum">       6</span>                 :             : import {IWeights} from &quot;../../src/interfaces/IWeights.sol&quot;;</span>
+<span id="L7"><span class="lineNum">       7</span>                 :             : </span>
+<span id="L8"><span class="lineNum">       8</span>                 :             : import {ReserveKey, AccountId} from &quot;../../src/types/Types.sol&quot;;</span>
+<span id="L9"><span class="lineNum">       9</span>                 :             : import {TokenHelpers} from &quot;../../src/libraries/TokenHelpers.sol&quot;;</span>
+<span id="L10"><span class="lineNum">      10</span>                 :             : </span>
+<span id="L11"><span class="lineNum">      11</span>                 :             : import {WAD} from &quot;../../src/libraries/Constants.sol&quot;;</span>
+<span id="L12"><span class="lineNum">      12</span>                 :             : </span>
+<span id="L13"><span class="lineNum">      13</span>                 :             : contract MockWeights is IWeights {</span>
+<span id="L14"><span class="lineNum">      14</span>                 :             :     using TokenHelpers for *;</span>
+<span id="L15"><span class="lineNum">      15</span>                 :             : </span>
+<span id="L16"><span class="lineNum">      16</span>                 :             :     error Weights__WeightNotFound(uint256 collateralTokenId, ReserveKey debtAsset);</span>
+<span id="L17"><span class="lineNum">      17</span>                 :             : </span>
+<span id="L18"><span class="lineNum">      18</span>                 :             :     mapping(ReserveKey collateralKey =&gt; mapping(ReserveKey debtKey =&gt; uint64 weight)) private _weights;</span>
+<span id="L19"><span class="lineNum">      19</span>                 :             : </span>
+<span id="L20"><span class="lineNum">      20</span>                 :<span class="tlaGNC">         295 :     function setWeight(ReserveKey collateralAsset, ReserveKey debtAsset, uint64 weight) external {</span></span>
+<span id="L21"><span class="lineNum">      21</span>                 :<span class="tlaGNC">         295 :         _weights[collateralAsset][debtAsset] = weight;</span></span>
+<span id="L22"><span class="lineNum">      22</span>                 :<span class="tlaGNC">         295 :         _weights[debtAsset][collateralAsset] = weight; // Assuming symmetric weights for simplicity</span></span>
+<span id="L23"><span class="lineNum">      23</span>                 :             :     }</span>
+<span id="L24"><span class="lineNum">      24</span>                 :             : </span>
+<span id="L25"><span class="lineNum">      25</span>                 :<span class="tlaGNC">         267 :     function getWeight(</span></span>
+<span id="L26"><span class="lineNum">      26</span>                 :             :         AccountId /* account */,</span>
+<span id="L27"><span class="lineNum">      27</span>                 :             :         uint256 collateralTokenId,</span>
+<span id="L28"><span class="lineNum">      28</span>                 :             :         ReserveKey debtAsset</span>
+<span id="L29"><span class="lineNum">      29</span>                 :             :     )</span>
+<span id="L30"><span class="lineNum">      30</span>                 :             :         external</span>
+<span id="L31"><span class="lineNum">      31</span>                 :             :         view</span>
+<span id="L32"><span class="lineNum">      32</span>                 :             :         returns (uint64 weight)</span>
+<span id="L33"><span class="lineNum">      33</span>                 :             :     {</span>
+<span id="L34"><span class="lineNum">      34</span>                 :<span class="tlaGNC">         267 :         ReserveKey collateralAsset = collateralTokenId.getReserveKey();</span></span>
+<span id="L35"><span class="lineNum">      35</span>                 :             : </span>
+<span id="L36"><span class="lineNum">      36</span>                 :             :         // If the assets are the same, return 1 as the weight.</span>
+<span id="L37"><span class="lineNum">      37</span>            [<span class="tlaGBC" title="Branch 0 was taken 133 times"> + </span>]:<span class="tlaGNC">         267 :         if (collateralAsset == debtAsset) {</span></span>
+<span id="L38"><span class="lineNum">      38</span>                 :<span class="tlaGNC">         133 :             return uint64(WAD);</span></span>
+<span id="L39"><span class="lineNum">      39</span>                 :             :         }</span>
+<span id="L40"><span class="lineNum">      40</span>                 :             : </span>
+<span id="L41"><span class="lineNum">      41</span>                 :<span class="tlaGNC">         134 :         weight = _weights[collateralAsset][debtAsset];</span></span>
+<span id="L42"><span class="lineNum">      42</span>                 :             : </span>
+<span id="L43"><span class="lineNum">      43</span>            [<span class="tlaUNC" title="Branch 0 was not executed"> # </span>]:<span class="tlaGNC">         134 :         if (weight == 0) {</span></span>
+<span id="L44"><span class="lineNum">      44</span>                 :<span class="tlaUNC">           0 :             revert Weights__WeightNotFound(collateralTokenId, debtAsset);</span></span>
+<span id="L45"><span class="lineNum">      45</span>                 :             :         }</span>
+<span id="L46"><span class="lineNum">      46</span>                 :             :     }</span>
+<span id="L47"><span class="lineNum">      47</span>                 :             : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.3-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

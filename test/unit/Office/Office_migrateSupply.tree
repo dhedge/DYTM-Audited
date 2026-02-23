@@ -1,0 +1,101 @@
+Office_migrateSupply
+├── When the account has no debt position
+│   ├── Given collateral in lending reserve in market one
+│   │   ├── When account wants to migrate to lending reserve in market two
+│   │   │   ├── It should allow migration.
+│   │   │   ├── It should burn the shares in the old reserve.
+│   │   │   ├── It should mint shares in the new reserve.
+│   │   │   ├── It should reduce the supplied amount in the old reserve.
+│   │   │   └── It should increase the supplied amount in the new reserve.
+│   │   └── When account wants to migrate to escrow reserve in market two
+│   │       ├── It should allow migration.
+│   │       ├── It should burn the shares in the old reserve.
+│   │       ├── It should mint shares in the new reserve.
+│   │       └── It should reduce the supplied amount in the old reserve.
+│   ├── Given collateral in escrowed reserve in market one
+│   │   ├── When account wants to migrate to lending reserve in market two
+│   │   │   ├── It should allow migration.
+│   │   │   ├── It should burn the shares in the old reserve.
+│   │   │   ├── It should mint shares in the new reserve.
+│   │   │   └── It should increase the supplied amount in the new reserve.
+│   │   └── When account wants to migrate to escrow reserve in market two
+│   │       ├── It should allow migration.
+│   │       ├── It should burn the shares in the old reserve.
+│   │       └── It should mint shares in the new reserve.
+│   ├── When the asset is not supported in the new market
+│   │   └── It should revert.
+│   │       └── With `Office__AssetNotSupported` error.
+│   ├── When account uses max uint256 shares to migrate
+│   │   ├── Given collateral in lending reserve in market one
+│   │   │   └── When account wants to migrate to lending reserve in market two
+│   │   │       ├── It should migrate the entire lending balance of the user.
+│   │   │       ├── It should burn the entire lending shares of the user in the old reserve.
+│   │   │       ├── It should mint the correct amount of lending shares in the new reserve.
+│   │   │       ├── It should reduce the supplied amount in the old reserve.
+│   │   │       └── It should increase the supplied amount in the new reserve.
+│   │   └── Given collateral in escrowed reserve in market one
+│   │       └── When account wants to migrate to escrow reserve in market two
+│   │           ├── It should migrate the entire escrow balance of the user.
+│   │           ├── It should burn the entire escrow shares of the user in the old reserve.
+│   │           └── It should mint the correct amount of escrow shares in the new reserve.
+│   ├── When account uses assets amount to migrate
+│   │   ├── Given the amount is less than the balance of the account
+│   │   │   ├── Given collateral in lending reserve in market one
+│   │   │   │   └── When account wants to migrate to lending reserve in market two
+│   │   │   │       ├── It should migrate the specified amount of lending to lending.
+│   │   │   │       ├── It should burn the correct amount of lending shares in the old reserve.
+│   │   │   │       ├── It should mint the correct amount of lending shares in the new reserve.
+│   │   │   │       ├── It should reduce the supplied amount in the old reserve.
+│   │   │   │       └── It should increase the supplied amount in the new reserve.
+│   │   │   └── Given collateral in escrowed reserve in market one
+│   │   │       └── When account wants to migrate to escrow reserve in market two
+│   │   │           ├── It should migrate the specified amount of escrow to escrow.
+│   │   │           ├── It should burn the correct amount of escrow shares in the old reserve.
+│   │   │           └── It should mint the correct amount of escrow shares in the new reserve.
+│   │   └── Given the amount is more than the balance of the account
+│   │       ├── Given collateral in lending reserve in market one
+│   │       │   └── When account wants to migrate to lending reserve in market two
+│   │       │       ├── It should revert.
+│   │       │       └── With underflow panic error.
+│   │       └── Given collateral in escrowed reserve in market one
+│   │           └── When account wants to migrate to escrow reserve in market two
+│   │               ├── It should revert.
+│   │               └── With `IRegistry.Registry__InsufficientBalance` error.
+│   ├── When the account provides both assets and shares
+│   │   ├── It should revert.
+│   │   └── With `IOffice.Office__AssetsAndSharesNonZero` error.
+│   ├── When assets represented by fromTokenId and toTokenId do not match
+│   │   └── It should revert.
+│   │       └── With `Office__MismatchedAssetsInMigration` error.
+│   └── When fromTokenId and toTokenId are in the same market
+│       └── It should revert.
+│           └── With `Office__SameMarketInMigration` error.
+├── When the account has a debt position
+│   ├── Given the account will be healthy
+│   │   ├── Given collateral in lending reserve in market one
+│   │   │   ├── When account wants to migrate to lending reserve in market two
+│   │   │   │   ├── It should allow migration.
+│   │   │   │   ├── It should burn the shares in the old reserve.
+│   │   │   │   ├── It should mint shares in the new reserve.
+│   │   │   │   └── It should reduce the supplied amount in the old reserve.
+│   │   │   └── When account wants to migrate to escrow reserve in market two
+│   │   │       ├── It should allow migration.
+│   │   │       ├── It should burn the shares in the old reserve.
+│   │   │       ├── It should mint shares in the new reserve.
+│   │   │       └── It should reduce the supplied amount in the old reserve.
+│   │   └── Given collateral in escrowed reserve in market one
+│   │       ├── When account wants to migrate to lending reserve in market two
+│   │       │   ├── It should allow migration.
+│   │       │   ├── It should burn the shares in the old reserve.
+│   │       │   ├── It should mint shares in the new reserve.
+│   │       │   └── It should increase the supplied amount in the new reserve.
+│   │       └── When account wants to migrate to escrow reserve in market two
+│   │           ├── It should allow migration.
+│   │           ├── It should burn the shares in the old reserve.
+│   │           └── It should mint shares in the new reserve.
+│   └── Given the account will become unhealthy
+│       └── It should revert.
+│           └── With `Office__AccountNotHealthy` error.
+└── Given not enough liquidity in the lending reserve in market one
+    └── It should revert.
+        └── With `Office__InsufficientLiquidity` error.

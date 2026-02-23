@@ -1,0 +1,21 @@
+// Given that this hook is same as SimpleAccountWhitelist except only enabling beforeBorrow hook,
+// we will focus only on the borrow hook related tests here.
+BorrowerWhitelist
+├── When supplying to the market
+│   └── Given account or address is not whitelisted
+│       └── It should allow the supply action.
+├── When borrowing from the market
+│   ├── Given account is whitelisted
+│   │   └── It should allow the borrow action.
+│   ├── Given account is not whitelisted
+│   │   └── It should revert.
+│   │       └── With `BorrowerWhitelist_NotWhitelisted` error.
+│   ├── Given account owner is whitelisted
+│   │   └── It should allow the borrow action.
+│   └── Given account owner is not whitelisted
+│       └── It should revert.
+│           └── With `BorrowerWhitelist_NotWhitelisted` error.
+└── When migrating supply to the market
+    └── Given destination market is the hook's designated market
+        └── Given account or address is not whitelisted
+            └── It should allow the migrate supply action.

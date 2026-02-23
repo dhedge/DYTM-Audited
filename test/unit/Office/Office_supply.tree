@@ -1,0 +1,48 @@
+Office_supply
+├── When market does not exist
+│   └── It should revert.
+├── When reserve exists
+│   ├── When lending assets
+│   │   ├── It should mint correct amount of lending shares.
+│   │   └── It should increase the supplied assets amount.
+│   ├── When escrowing assets
+│   │   ├── It should mint correct amount of escrow shares.
+│   │   └── It should increase the escrowed assets amount.
+│   ├── When lending to an isolated account
+│   │   ├── It should mint correct amount of lending shares to the isolated account.
+│   │   ├── It should increase the supplied assets amount.
+│   │   └── It should create an isolated account for the caller.
+│   ├── When lending on behalf of an account
+│   │   └── It should increase the supplied assets amount.
+│   ├── When lending on behalf of an isolated account and the account exists
+│   │   ├── It should mint correct amount of lending shares to the account.
+│   │   └── It should increase the supplied assets amount.
+│   ├── When lending on behalf of an isolated account and the account does not exist
+│   │   ├── It should mint correct amount of lending shares to the account.
+│   │   ├── It should increase the supplied assets amount.
+│   │   └── It should not create an isolated account for the caller.
+│   ├── When escrowing to an isolated account
+│   │   ├── It should mint correct amount of escrow shares to the isolated account.
+│   │   ├── It should increase the escrowed assets amount.
+│   │   └── It should create an isolated account for the caller.
+│   ├── When escrowing on behalf of an account
+│   │   ├── It should mint correct amount of escrow shares to the account.
+│   │   └── It should increase the escrowed assets amount.
+│   ├── When escrowing on behalf of an isolated account and the account exists
+│   │   ├── It should mint correct amount of escrow shares.
+│   │   └── It should increase the escrowed assets amount.
+│   ├── When escrowing on behalf of an isolated account and the account does not exist
+│   │   ├── It should mint correct amount of escrow shares.
+│   │   ├── It should increase the escrowed assets amount.
+│   │   └── It should not create an isolated account for the caller.
+│   ├── When lending using max uint256 assets amount
+│   │   ├── It should lend the entire balance of the caller.
+│   │   ├── It should mint correct amount of lending shares.
+│   │   └── It should increase the supplied assets amount.
+│   └── When escrowing using max uint256 assets amount
+│       ├── It should escrow the entire balance of the caller.
+│       ├── It should mint correct amount of escrow shares.
+│       └── It should increase the escrowed assets amount.
+└── When reserve doesn't exist
+    └── It should revert.
+        └── Because the asset is not supported.

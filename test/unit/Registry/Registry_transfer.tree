@@ -1,0 +1,25 @@
+// Note that since the underlying function of `transfer` is `transferFrom`, the tests for transfer will only
+focus on transfers by owner and for user accounts. If required, additional tests can be added here.
+Registry_transfer
+└── When reserve exists
+    └── When caller is owner
+        └── Given account is not isolated
+            └── When the account has a debt position
+                ├── Given account is healthy
+                │   └── It should allow collateral token transfer.
+                ├── Given account will be unhealthy
+                │   └── It should revert.
+                │       └── With error `Office__AccountNotHealthy`
+                ├── Given accounts debt will be below minimum debt after transfer
+                │   └── It should revert.
+                │       └── With error `Office__DebtBelowMinimum`.
+                ├── Given recipient account debt will be below minimum debt after transfer
+                │   └── It should revert.
+                │       └── With error `Office__DebtBelowMinimum`.
+                ├── Given accounts debt will be zero after transfer
+                │   └── It should allow debt token transfer.
+                └── Given recipient account is not owned by caller
+                    └── Given the second account is healthy
+                        └── When transferring debt token
+                            └── It should revert.
+                                └── With error `Registry__DifferentOwnersWhenTransferringDebt`.

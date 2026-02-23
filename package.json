@@ -1,0 +1,27 @@
+{
+    "scripts": {
+        "lint:sol": "solhint 'src/**/*.sol' --max-warnings 0",
+        "lint:sol:fix": "pnpm lint:sol -- --fix",
+        "format": "forge fmt",
+        "abigen": "hardhat export-abi",
+        "coverage": "./script/shell/run-coverage.sh",
+        "doc": "./script/shell/run-doc.sh",
+        "deploy:office:dry": "forge clean && FOUNDRY_PROFILE=deploy_office forge script DeployOfficeScript",
+        "deploy:office:prod": "forge clean && FOUNDRY_PROFILE=deploy_office forge script DeployOfficeScript --broadcast --verify",
+        "deploy:hook:dry": "forge clean && FOUNDRY_PROFILE=create2 forge script DeployHookScript --sig 'run(string,uint160,bytes)'",
+        "deploy:hook:prod": "forge clean && FOUNDRY_PROFILE=create2 forge script DeployHookScript --broadcast --verify --sig 'run(string,uint160,bytes)'",
+        "upgrade:office:dry": "forge clean && FOUNDRY_PROFILE=deploy_office forge script UpgradeOfficeScript --sig 'run(address)'",
+        "upgrade:office:prod": "forge clean && FOUNDRY_PROFILE=deploy_office forge script UpgradeOfficeScript --broadcast --verify --sig 'run(address)'",
+        "contracts-size": "forge b --sizes --optimize --skip test script flattened",
+        "prepare": "husky",
+        "preinstall": "npx only-allow pnpm"
+    },
+    "devDependencies": {
+        "@openzeppelin/upgrades-core": "^1.44.0",
+        "dotenv": "^16.5.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.5.1",
+        "prettier-plugin-solidity": "^1.4.2",
+        "solhint": "^5.1.0"
+    }
+}

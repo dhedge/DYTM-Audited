@@ -1,0 +1,136 @@
+Office_liquidate
+├── Given account is unhealthy
+│   ├── Given no bad debt and complete liquidation
+│   │   ├── It should liquidate the account completely.
+│   │   ├── It should remove the debt from the account.
+│   │   ├── It should reward liquidator correctly.
+│   │   └── It should repay correct amount to the lenders.
+│   ├── Given no bad debt and partial liquidation
+│   │   ├── It should liquidate the account partially.
+│   │   ├── It should reduce the debt correctly.
+│   │   ├── It should reward liquidator correctly.
+│   │   └── It should repay correct amount to the lenders.
+│   ├── Given no bad debt and liquidator tries to liquidate dust amount of collateral
+│   │   └── It should revert.
+│   │       └── With `Office__NoAssetsRepaid` error.
+│   ├── Given no bad debt and collateral consists mostly of debt asset and complete liquidation
+│   │   ├── It should liquidate the account completely.
+│   │   ├── It should remove the debt from the account.
+│   │   ├── It should not transfer entire asset amount which is the debt asset.
+│   │   ├── It should reward liquidator correctly for the asset which is the same as debt asset.
+│   │   └── It should repay correct amount to the lenders.
+│   ├── Given no bad debt and enough liquidity in the reserve
+│   │   └── Given inKind is true
+│   │       └── When complete liquidation
+│   │           ├── It should liquidate the account completely.
+│   │           ├── It should remove the debt from the account.
+│   │           ├── It should transfer the underlying collateral assets to the liquidator.
+│   │           ├── It should not transfer collateral shares to the liquidator.
+│   │           └── It should repay correct amount to the lenders.
+│   ├── Given no bad debt and not enough liquidity in the reserve
+│   │   ├── Given inKind is true
+│   │   │   ├── When partial liquidation
+│   │   │   │   ├── It should liquidate the account partially.
+│   │   │   │   ├── It should reduce the debt correctly.
+│   │   │   │   ├── It should reward liquidator correctly.
+│   │   │   │   ├── It should transfer collateral shares to the liquidator.
+│   │   │   │   └── It should repay correct amount to the lenders.
+│   │   │   ├── When complete liquidation
+│   │   │   │   ├── It should liquidate the account completely.
+│   │   │   │   ├── It should remove the debt from the account.
+│   │   │   │   ├── It should reward liquidator correctly.
+│   │   │   │   ├── It should transfer collateral shares to the liquidator.
+│   │   │   │   └── It should repay correct amount to the lenders.
+│   │   │   ├── When collateral consists mostly of debt asset and complete liquidation
+│   │   │   │   ├── It should liquidate the account completely.
+│   │   │   │   ├── It should remove the debt from the account.
+│   │   │   │   ├── It should not transfer entire asset amount which is the debt asset.
+│   │   │   │   ├── It should reward liquidator correctly for the asset which is the same as debt asset.
+│   │   │   │   ├── It should transfer collateral shares to the liquidator.
+│   │   │   │   └── It should repay correct amount to the lenders.
+│   │   │   └── When liquidator tries to liquidate dust amount of collateral
+│   │   │       ├── It should revert.
+│   │   │       └── With `Office__NoAssetsRepaid` error.
+│   │   └── Given inKind is false
+│   │       ├── It should revert.
+│   │       └── With `IOffice.Office__InsufficientLiquidity` error.
+│   ├── Given bad debt and complete liquidation
+│   │   ├── It should liquidate the account completely.
+│   │   ├── It should remove the debt from the account.
+│   │   ├── It should reward liquidator correctly.
+│   │   └── It should socialise the bad debt correctly.
+│   ├── Given bad debt and partial liquidation
+│   │   ├── It should liquidate the account partially.
+│   │   ├── It should reduce the debt correctly.
+│   │   ├── It should reward liquidator correctly.
+│   │   └── It should socialise the bad debt correctly.
+│   ├── Given bad debt and dust amount of collateral is liquidated completely // Technically, bad debt scenario is not a necessity for complete dust amount liquidations but it's easier to test.
+│   │   ├── It should remove the collateral id from the account storage.
+│   │   ├── It should reduce the debt correctly.
+│   │   ├── It should reward liquidator correctly.
+│   │   └── It should socialise the bad debt correctly.
+│   ├── Given bad debt and collateral consists mostly of debt asset and complete liquidation
+│   │   ├── It should liquidate the account completely.
+│   │   ├── It should remove the debt from the account.
+│   │   ├── It should not transfer entire asset amount which is the debt asset.
+│   │   ├── It should reward liquidator correctly for the asset which is the same as debt asset.
+│   │   └── It should socialise the bad debt correctly.
+│   ├── Given bad debt and enough liquidity in the reserve
+│   │   └── Given inKind is true
+│   │       └── When complete liquidation
+│   │           ├── It should liquidate the account completely.
+│   │           ├── It should remove the debt from the account.
+│   │           ├── It should transfer the underlying collateral assets to the liquidator.
+│   │           ├── It should not transfer collateral shares to the liquidator.
+│   │           └── It should socialise the bad debt correctly.
+│   ├── Given bad debt and not enough liquidity in the reserve
+│   │   ├── Given inKind is true
+│   │   │   ├── When partial liquidation
+│   │   │   │   ├── It should liquidate the account partially.
+│   │   │   │   ├── It should reduce the debt correctly.
+│   │   │   │   ├── It should reward liquidator correctly.
+│   │   │   │   ├── It should transfer collateral shares to the liquidator.
+│   │   │   │   └── It should socialise the bad debt correctly.
+│   │   │   ├── When complete liquidation
+│   │   │   │   ├── It should liquidate the account completely.
+│   │   │   │   ├── It should remove the debt from the account.
+│   │   │   │   ├── It should reward liquidator correctly.
+│   │   │   │   ├── It should transfer collateral shares to the liquidator.
+│   │   │   │   └── It should socialise the bad debt correctly.
+│   │   │   ├── When collateral consists mostly of debt asset and complete liquidation
+│   │   │   │   ├── It should liquidate the account completely.
+│   │   │   │   ├── It should remove the debt from the account.
+│   │   │   │   ├── It should not transfer any debt asset to the liquidator.
+│   │   │   │   ├── It should reward liquidator correctly for the asset which is the same as debt asset.
+│   │   │   │   ├── It should transfer collateral shares to the liquidator.
+│   │   │   │   └── It should socialise the bad debt correctly.
+│   │   │   └── When liquidator liquidates dust amount of collateral completely
+│   │   │       ├── It should remove the collateral id from the account storage.
+│   │   │       ├── It should reduce the debt correctly.
+│   │   │       ├── It should reward liquidator correctly.
+│   │   │       └── It should transfer collateral shares to the liquidator.
+│   │   └── Given inKind is false
+│   │       ├── It should revert.
+│   │       └── With `IOffice.Office__InsufficientLiquidity` error.
+│   ├── Given some callback data
+│   │   ├── It should call the liquidator with the callback data.
+│   │   └── It should liquidate the account correctly.
+│   ├── Given bad debt and the liquidator provides max uint256 collateral shares
+│   │   ├── It should use the entire collateral shares of the account.
+│   │   ├── It should reduce the debt of the account.
+│   │   ├── It should reward liquidator correctly.
+│   │   └── It should repay correct amount to the lenders.
+│   ├── Given bad debt and the liquidator provides assets amount instead of shares
+│   │   ├── Given the amount is less than the collateral balance of the account
+│   │   │   ├── It should use the specified amount of collateral.
+│   │   │   ├── It should reduce the debt of the account.
+│   │   │   ├── It should reward liquidator correctly.
+│   │   │   └── It should repay correct amount to the lenders.
+│   │   └── Given the amount is more than the collateral balance of the account
+│   │       └── It should revert.
+│   └── Given the liquidator provides both shares and assets amount
+│       ├── It should revert.
+│       └── With `IOffice.Office__AssetsAndSharesNonZero` error.
+└── Given account is healthy
+    └── It should revert.
+        └── With `Office__AccountStillHealthy`.

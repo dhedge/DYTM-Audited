@@ -1,0 +1,32 @@
+Registry_setOperator
+├── When caller is owner
+│   ├── Given account is not isolated
+│   │   ├── Given spender is not zero address
+│   │   │   └── It should set the operator for the account.
+│   │   └── Given spender is zero address
+│   │       └── It should revert.
+│   │           └── With error `Registry__ZeroAddress` error.
+│   ├── Given account is isolated
+│   │   ├── Given spender is not zero address
+│   │   │   └── It should set the operator for the account.
+│   │   ├── Given spender is zero address
+│   │   │   └── It should revert.
+│   │   │       └── With error `Registry__ZeroAddress` error.
+│   │   ├── When account is transferred to a new owner
+│   │   │   └── It should deny permissions to the previously set operator.
+│   │   └── When account is transferred back to the previous owner
+│   │       └── It should restore permissions to the previously set operator.
+│   └── When unsetting operator
+│       ├── Given account is not isolated
+│       │   └── Given spender is not zero address
+│       │       └── It should unset the operator for the account.
+│       └── Given account is isolated
+│           └── Given spender is not zero address
+│               └── It should unset the operator for the account.
+└── When caller is not owner
+    ├── Given account is not isolated
+    │   └── Given spender is not zero address
+    │       └── It should set the operator for the account.
+    └── Given account is isolated
+        └── Given spender is not zero address
+            └── It should set the operator for the account.

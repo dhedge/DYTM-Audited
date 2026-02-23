@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120">
+    <style>
+        .label { font-family: monospace; font-size: 14px; fill: #333; }
+        .bit-label { font-family: monospace; font-size: 12px; fill: #666; }
+        .rect { stroke: #333; stroke-width: 1; fill: #fff; }
+        .rect-unique-id { fill: #fff3cd; }
+        .rect-zero { fill: #f8f9fa; }
+    </style>
+    <rect x="10" y="40" width="580" height="40" class="rect"/>
+    <rect x="10" y="40" width="217.5" height="40" class="rect rect-unique-id"/>
+    <rect x="227.5" y="40" width="362.5" height="40" class="rect rect-zero"/>
+
+    <text x="118.75" y="65" text-anchor="middle" class="label">Account ID (96 bits)</text>
+    <text x="408.75" y="65" text-anchor="middle" class="label">Zero (160 bits)</text>
+
+    <text x="10" y="30" class="bit-label">255</text>
+    <text x="227.5" y="30" class="bit-label">159</text>
+    <text x="590" y="30" text-anchor="end" class="bit-label">0</text>
+</svg>
