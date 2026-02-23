@@ -8,7 +8,7 @@ At the core, DYTM is pretty similar to any other lending protocol. One of the ma
 
 All markets in DYTM live in a single contract called [`Office`](../src/Office.sol). We use a heavily modified version of [ERC6909](https://eips.ethereum.org/EIPS/eip-6909) tokenization standard to represent assets, debt and accounts (more about this later) in a market. All market functions have a `before` and `after` hook which allows us to execute custom logic before and after the market function is executed. This is what allows for a high level of customization.
 
-To create a leveraged position, a user never needs to loop (i.e. call supply then borrow then supply and so on). The user can simply call the `supply` function with the amount of asset they want to supply and then `borrow` multiples of the supplied amount if they choose to do so provided they re-deposit some assets as part of their position's collateral. We have a delegation feature to provide multicall like features for any user (smart account or EOA, doesn't matter). This allows batching complex actions not just restricted DYTM.
+To create a leveraged position, a user never needs to loop (i.e. call supply then borrow then supply and so on). The user can simply call the `supply` function with the amount of asset they want to supply and then `borrow` multiples of the supplied amount if they choose to do so provided they re-deposit some assets as part of their position's collateral. We have a delegation feature to provide multicall like features for any user (smart account or EOA, doesn't matter). This allows batching complex actions not just restricted to DYTM.
 
 ## Roles
 
@@ -125,7 +125,7 @@ Note that users can withdraw their escrowed assets at any time without any liqui
 
 ### Repay Debt
 
-A user can repay their debt provided they have enough of the debt asset while repaying. They can also use collateral assets to repay their debt but this involves using the `delegationCall` function to withdraw the collateral, swap it to the debt asset (if required) and then repay the debt.
+A user can repay their debt provided they have enough of the debt asset while repaying. They can also use collateral assets to repay their debt using the `delegationCall` function to withdraw the collateral, swap it to the debt asset (if required) and then repay the debt. If they have the debt asset in their collateral asset(s) list, they can use the same as well (regardless of whether they are lent or escrowed) to repay the debt.
 
 Repayment transaction will fail in case the account becomes unhealthy after the repayment.
 

@@ -531,10 +531,6 @@ contract Office is IOffice, OfficeStorage, Context, Registry, TransientEnumerabl
         return _accrueInterest(key, getMarketConfig(key.getMarketId()));
     }
 
-    //////////////////////////////////////////////////
-    //                View Functions                //
-    /////////////////////////////////////////////////
-
     /// @inheritdoc IOffice
     function isHealthyAccount(AccountId account, MarketId market) public returns (bool isHealthy) {
         // First we calculate the debt value in USD.

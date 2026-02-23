@@ -8,7 +8,7 @@ At the core, DYTM is pretty similar to any other lending protocol. One of the ma
 
 All markets in DYTM live in a single contract called [`Office`](../src/Office.sol). We use a heavily modified version of [ERC6909](https://eips.ethereum.org/EIPS/eip-6909) tokenization standard to represent assets, debt and accounts (more about this later) in a market. All market functions have a `before` and `after` hook which allows us to execute custom logic before and after the market function is executed. This is what allows for a high level of customization.
 
-To create a leveraged position, a user never needs to loop (i.e. call supply then borrow then supply and so on). The user can simply call the `supply` function with the amount of asset they want to supply and then `borrow` multiples of the supplied amount if they choose to do so provided they re-deposit some assets as part of their position's collateral. We have a delegation feature to provide multicall like features for any user (smart account or EOA, doesn't matter). This allows batching complex actions not just restricted DYTM.
+To create a leveraged position, a user never needs to loop (i.e. call supply then borrow then supply and so on). The user can simply call the `supply` function with the amount of asset they want to supply and then `borrow` multiples of the supplied amount if they choose to do so provided they re-deposit some assets as part of their position's collateral. We have a delegation feature to provide multicall like features for any user (smart account or EOA, doesn't matter). This allows batching complex actions not just restricted to DYTM.
 
 ## Roles
 
@@ -125,7 +125,7 @@ Note that users can withdraw their escrowed assets at any time without any liqui
 
 ### Repay Debt
 
-A user can repay their debt provided they have enough of the debt asset while repaying. They can also use collateral assets to repay their debt but this involves using the `delegationCall` function to withdraw the collateral, swap it to the debt asset (if required) and then repay the debt.
+A user can repay their debt provided they have enough of the debt asset while repaying. They can also use collateral assets to repay their debt using the `delegationCall` function to withdraw the collateral, swap it to the debt asset (if required) and then repay the debt. If they have the debt asset in their collateral asset(s) list, they can use the same as well (regardless of whether they are lent or escrowed) to repay the debt.
 
 Repayment transaction will fail in case the account becomes unhealthy after the repayment.
 
@@ -133,15 +133,19 @@ Repayment transaction will fail in case the account becomes unhealthy after the 
 
 When the weighted collateral value of an account falls below the debt asset value, the account is considered unhealthy. Anyone can liquidate an unhealthy account as long as the officer of the market doesn't restrict liquidations to specific addresses via hooks. Liquidator can use the `isHealthyAccount` function to check if an account is healthy or not.
 
-The liquidator needs to provide an array of collateral shares and amounts to liquidate. The debt shares amount to be burned is calculated based on the amount of collateral shares being liquidated and the liquidation bonus percentage set by the officer of the market. For example if the debt value is $100 in USDC and total collateral value is $120 in ETH, the liquidation bonus is 10%, the liquidator would need to liquidate collateral shares worth:
+The liquidator needs to provide an array of collateral shares and amounts to liquidate. The debt shares amount to be burned is calculated based on the amount of collateral shares being liquidated and the liquidation bonus percentage set by the officer of the market. For example if the debt value is $100 in USDC and total collateral value is $120 in ETH, the liquidation bonus is 10%, the liquidator would need to liquidate shares worth:
 
-$$\text{collateralValueToLiquidate} = \frac{\text{debtValue}}{1 - \text{liquidationBonus}} = \frac{100}{1 - 0.1} = \$111.11$$
+$$\text{collateralValueToLiquidate} = {\text{debtValue}}\times{(1 + \text{liquidationBonus})} = {100}\times{(1 + 0.1)} = \$110.00$$
+
+In this case, the liquidator would seize $110 worth of collateral and repay $100 worth of USDC debt, resulting in a profit of $10.
 
 If using a smart contract to repay debt, you can take a look at the `getLiquidationCollaterals` function in [`CommonFunctions`](../test/helpers/CommonFunctions.sol). Otherwise, implement the same logic offchain and pass the calculated collateral shares and amounts to the `liquidate` function.
 
 The liquidator can also provide additional data which will be used for liquidation callback. This is useful for custom liquidation logic such as swapping the collateral to the debt asset and then repaying the debt. The liquidator must approve enough debt asset amount to the Office for repayment.
 
 The liquidator is always paid a bonus amount as long as the bonus percentage is greater than 0 regardless of the position having accrued bad debt or not. The bonus is either deducted from the liquidation repayment obligation of the liquidator or directly transferred to the liquidator the latter being the case if the bonus is greater than the repayment obligation which could happen if the collateral asset and debt asset are the same.
+
+Liquidation repayments can be done in-kind via the `inKind` parameter. If the reserve lacks liquidity, setting `inKind=true` returns collateral shares instead of the underlying asset; setting `inKind=false` reverts the transaction. If sufficient liquidity exists, the liquidator always receives the underlying asset.
 
 Liquidations can't be done during a `delegationCall`. This is because an account can be made temporarily unhealthy and forcefully liquidated.
 
@@ -187,4 +191,38 @@ And a lot more. Operators cannot transfer authority of the account to another ad
 
 A crucial advantage of delegation calls is that the health checks are done at the end of the call. This means the operator can do anything with the account (within the operator's scope) as long as the account remains healthy at the end of the call. This allows for complex actions to be batched without worrying about the account becoming unhealthy in between which could happen for example when swapping one of the collateral assets to another asset for the same debt position.
 
-During delegation calls, the `delegatee` can operator on a maximum of 10 accounts/markets (arbitrarily hardcoded as a constant in [Constants](./src/libraries/Constants.sol)) at a time provided the account made a health-modifying action (such as `borrow`, `withdraw`, `migrateSupply`). This limit is mainly due to gas constraints.
+During delegation calls, the `delegatee` can operator on a maximum of 10 accounts/markets (arbitrarily hardcoded as a constant in [Constants](../src/libraries/Constants.sol)) at a time provided the account made a health-modifying action (such as `borrow`, `withdraw`, `migrateSupply`). This limit is mainly due to gas constraints.
+
+### Asset Transfers
+
+Collateral and even debt assets can be transferred from one account to another as long as the sender and/or the recipient account remains healthy after the transfer and additionally, debt asset transfers can only be done between accounts owned by the same address.
+
+For debt tokens, the approvals work in the following way:
+- An account owner can approve another address to transfer debt tokens on their behalf across **all** of their accounts.
+- An operator of an account **cannot** transfer debt from one account to another even if both accounts are owned by the same address unless explicitly approved by the owner of the accounts.
+- No per-account debt-receiver approvals exist. If an address is approved to transfer debt tokens for an account owner, they can transfer debt tokens to any account owned by the same address. Transfers cannot be restricted to specific accounts/amounts.
+
+While it's _technically_ feasible from the protocol developer's perspective to allow debt asset transfers between accounts owned by different addresses particularly when the recipient initiates the transfer to sort of take over someone's portion of debt, we are yet unclear about the implications of such a feature and hence have not implemented it.
+
+## Acknowledged Issues
+
+- [SimpleDelegatee](../src/extensions/delegatees/SimpleDelegatee.sol) **SHOULD NOT** hold any funds beyond the duration of a transaction. Anyone can withdraw funds from it at any time.
+- Interest should be accrued before setting a new IRM or performance fee percentage to avoid interest miscalculation between the last accrual and the parameter change timestamps. If using [SimpleMarketConfig](../src/extensions/market-configs/SimpleMarketConfig.sol), call `accrueInterestOnAllReserves` before changing these parameters.
+- When setting weights for the same collateral and debt asset (let's say user lends USDC and borrows USDC), it **SHOULD NOT BE** set to `1e18` unless the officer trusts the borrower. This is because the account can borrow an unbounded amount of USDC against any amount of USDC collateral. This can be exploited to drain the reserve of USDC and easily create bad debt.
+- When using `donateToReserve`, it's possible this call can be front-runned and the donation amount snatched from the lenders. Use MEV-protected RPCs or pause the markets temporarily while donating to reserves. For the latter, the officer can use hooks to restrict actions while donating to reserves.
+However, even this is prone to the MEV-sandwiching attack if done regularly. `donateToReserve` is best used for infrequent actions (like covering bad debts).
+- Be cautious of using vaults as collateral whose share price can be manipulated in a single transaction. A possible attack vector is as follows:
+  1. Flashloan vault shares from Office.
+  2. Redeem shares -> underlying assets at the current (higher) ratio.
+  3. Trigger liquidation on the vault, lowering its asset/share ratio.
+  4. Deposit assets back into the vault -> receive more shares than originally borrowed.
+  5. Repay the flashloan, keeping the surplus shares as profit.
+
+  The attack is profitable as long as the gain exceeds entry/exit fees of the vault.
+- Only per-transaction delegation calls are guaranteed to work correctly. `TransientEnumerableHashTableStorage` uses transient storage to track (account, market) pairs in a queue during a `delegationCall()` execution. The `__length` counter and hashtable entries persist in transient storage until the end of the transaction. When a transaction contains multiple `delegationCall()` invocations, the second call inherits stale (account, market) pairs from the first call's queue. These leftover entries are then re-processed during health checks, even though they are unrelated to the current operation. Since transient storage is only cleared at the end of a transaction (not between internal calls), subsequent `delegationCall()` operations within the same transaction will iterate over an increasingly polluted queue.
+- Withdrawals and borrows rely on available market liquidity. This liquidity can be griefed by supplying collateral and borrowing all available liquidity, before and after a user's borrow/withdrawal operation. Attackers or MEV bots can block legitimate user transactions for withdrawals or borrows by temporarily draining market liquidity. Consider using MEV-protected RPCs or implementing custom hooks to restrict such behavior if it becomes a significant issue.
+- A malicious liquidator can intentionally leave a minimal amount of collateral in an underwater account to prevent bad debt from being socialized, avoiding losses if they are also a lender in the affected market. While very rare in practice, officers concerned about this scenario can implement custom liquidation logic via hooks to enforce complete liquidation of unhealthy accounts.
+- When a new borrowable token is enabled in a market, the first borrower can manipulate the total borrow shares accounting by repeatedly borrowing and repaying minimal amounts. This inflates the total borrow shares, ultimately preventing further borrowing from the market. To mitigate this, officers should consider initializing the market with a small borrow amount from a trusted account to set a reasonable baseline for total borrow shares.
+- During a delegation call, health checks are deferred until the end of the call. This allows users to create temporary undercollateralized positions within the delegation context. This behavior introduces a read-only reentrancy vector, where an attacker could exploit external integrations or hooks that rely on real-time collateral status. By having temporary undercollateralized positions, the attacker may trigger unintended behaviors in those systems, potentially leading to fund loss or incorrect state transitions. If real-time collateral status is critical for your use case, consider calling `isHealthyAccount` to check an account's health within your integration.
+- When transferring isolated accounts, the `canTransferShares` check is explicitly skipped. This logic allows transfers of isolated accounts without enforcing transfer restrictions defined by canTransferShares. As a result, a user with transfer privileges (e.g., whitelisted) can create an isolated account containing restricted assets and transfer ownership of that account to a non-whitelisted address, effectively bypassing the restrictions. Use specialized hooks to disable actions for such accounts if this is a concern.
+- It's possible that an account can be left with debt shares below the minimum debt amount USD after a liquidation. To prevent this, officers can implement custom hooks to ensure that liquidations do not leave accounts with debt below the minimum threshold.
